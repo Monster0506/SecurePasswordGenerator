@@ -1,6 +1,7 @@
 from pwdGen import Password
 from encrypt import AESCipher
 
+
 class SecurePasword:
     def __init__(self, size=32, seed=None, master="key"):
         self._password_object = Password(size, seed)

@@ -5,7 +5,6 @@ from Crypto import Random
 from base64 import b64encode, b64decode
 
 
-
 class AESCipher(object):
     def __init__(self, key="key"):
         self.bs = AES.block_size
@@ -29,10 +28,10 @@ class AESCipher(object):
 
     @staticmethod
     def _unpad(s):
-        unpadded = s[:-ord(s[len(s) - 1:])]
+        unpadded = s[: -ord(s[len(s) - 1 :])]
         return unpadded
-    
-    
+
+
 if __name__ == "__main__":
     cipher = AESCipher("key")
     encrypted = cipher.encrypt("Hello World")

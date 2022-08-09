@@ -1,5 +1,7 @@
 from random import seed as _seed, choice, random
 from string import digits
+
+
 class Password(object):
     def __init__(self, length=32, seed=None):
         if length < 8:
@@ -15,7 +17,6 @@ class Password(object):
         self._true_words = words
         self.words = []
         self.value = self.generate()
-
 
     def _gen_words(self):
         words = []

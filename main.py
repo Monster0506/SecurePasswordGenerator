@@ -15,11 +15,9 @@ def getMaster(filename=".env"):
     return master
 
 
-
-
 def demo():
-    websiteName = input("Website name: ")
-    password = Password(32, seed = websiteName)
+    website_name = input("Website name: ")
+    password = Password(32, seed=website_name)
     master = getMaster()
     cipher = AESCipher(master)
     encrypted = cipher.encrypt(password)
@@ -27,10 +25,9 @@ def demo():
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(32, websiteName, master=getMaster())
+    pwd = SecurePasword(32, website_name, master=getMaster())
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
-
 
 
 def debug(password, size):
@@ -43,9 +40,11 @@ def debug(password, size):
 
 
 def tests():
-    for i in range(8, 5000):
+    website_name = input("Website name: ")
+    for i in range(8, 1250):
         size = i
-        password = Password(size)
+        password = Password(size, seed=website_name)
+        pwd = SecurePasword(size, website_name, master=getMaster())
         length = len(password)
         if length < size:
             print("Password is too short")
@@ -53,6 +52,11 @@ def tests():
             break
         elif length > size:
             print("Password is too long")
+            debug(password, size)
+            break
+        elif password.value != pwd.decrypt():
+            print("Passwords are not equal")
+            print(type(password), type(pwd.decrypt()))
             debug(password, size)
             break
         else:
@@ -63,8 +67,9 @@ def tests():
                     break
             except IndexError:
                 pass
+        print(f"Password, {password.readable()}, is correct")
 
 
 if __name__ == "__main__":
-    # tests()
-    demo()
+    tests()
+    # demo()
