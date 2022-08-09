@@ -6,8 +6,6 @@ from base64 import b64encode, b64decode
 
 
 
-
-
 class AESCipher(object):
     def __init__(self, key="key"):
         self.bs = AES.block_size
