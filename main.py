@@ -6,7 +6,7 @@ from encrypt import AESCipher
 from securePassword import SecurePasword
 
 
-def getMaster(filename="master"):
+def getMaster(filename=".env"):
     if path.exists(filename):
         with open(filename, "r") as f:
             master = f.readline()
