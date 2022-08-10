@@ -31,7 +31,9 @@ def demo():
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(length = 32, seed = website_name, master=getMaster(), username=user_name)
+    pwd = SecurePasword(
+        length=32, seed=website_name, master=getMaster(), username=user_name
+    )
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
@@ -53,8 +55,10 @@ def tests():
     website_name = input("Website name: ")
     for i in range(8, 1250):
         size = i
-        password = Password(length = size, username = "test", seed=website_name)
-        pwd = SecurePasword(length = size, username="test", seed=website_name, master=getMaster())
+        password = Password(length=size, username="test", seed=website_name)
+        pwd = SecurePasword(
+            length=size, username="test", seed=website_name, master=getMaster()
+        )
         length = len(password)
         if length < size:
             print("Password is too short")
