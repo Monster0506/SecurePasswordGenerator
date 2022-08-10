@@ -1,15 +1,22 @@
 from random import seed as _seed, choice, random
 from string import digits
+from hashlib import sha256
 
 
 class Password(object):
-    def __init__(self, length=32, seed=None):
+    def __init__(
+        self,
+        username,
+        length=32,
+        seed=None,
+    ):
+        _seed(username)
         if length < 8:
             raise ValueError("Password length must be at least 8 characters")
         if seed:
-            _seed(seed)
-        else:
-            _seed()
+            value = str(seed) + str(username)
+            _seed(value)
+
         self.length = length
         self.sounds = "bdfghjklmnprstvwyz"
         self.vowels = "aeiou"
@@ -17,6 +24,7 @@ class Password(object):
         self._true_words = words
         self.words = []
         self.value = self.generate()
+        self.username = username
 
     def _gen_words(self):
         words = []
@@ -74,3 +82,11 @@ class Password(object):
 
     def __len__(self):
         return len(self.value)
+
+    def __repr__(self) -> str:
+        return self.value
+
+
+if __name__ == "__main__":
+    pwd = Password(seed="test", username="usename")
+    print(pwd)

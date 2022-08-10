@@ -15,9 +15,15 @@ def getMaster(filename=".env"):
     return master
 
 
+def decrypt(encrypted, master=getMaster(), username="username"):
+    cipher = AESCipher(master, username)
+    return cipher.decrypt(encrypted)
+
+
 def demo():
     website_name = input("Website name: ")
-    password = Password(32, seed=website_name)
+    user_name = "TEST"
+    password = Password(length=32, username=user_name, seed=website_name)
     master = getMaster()
     cipher = AESCipher(master)
     encrypted = cipher.encrypt(password)
@@ -25,9 +31,11 @@ def demo():
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(32, website_name, master=getMaster())
+    pwd = SecurePasword(length = 32, seed = website_name, master=getMaster(), username=user_name)
+
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
+    print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
 
 
 def debug(password, size):
@@ -43,8 +51,8 @@ def tests():
     website_name = input("Website name: ")
     for i in range(8, 1250):
         size = i
-        password = Password(size, seed=website_name)
-        pwd = SecurePasword(size, website_name, master=getMaster())
+        password = Password(length = size, username = "test", seed=website_name)
+        pwd = SecurePasword(length = size, username="test", seed=website_name, master=getMaster())
         length = len(password)
         if length < size:
             print("Password is too short")
