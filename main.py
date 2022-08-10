@@ -36,6 +36,8 @@ def demo():
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
     print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
+    print(f"Decrypted FAIL: {decrypt(pwd.hash, master='test', username=user_name)}")
+    print(f"Decrypted FAIL: {decrypt(pwd.hash, master=master, username='test')}")
 
 
 def debug(password, size):
