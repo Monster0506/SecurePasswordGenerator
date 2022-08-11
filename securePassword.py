@@ -3,7 +3,7 @@ from encrypt import AESCipher
 
 
 class SecurePasword:
-    def __init__(self, username="username", length=32, seed=None, master="key"):
+    def __init__(self, username, length=32, seed=None, master="key"):
         self._password_object = Password(length=length, seed=seed, username=username)
         self.cipher = AESCipher(master=master, salt=username)
         self.hash = self.cipher.encrypt(self._password_object.value)
