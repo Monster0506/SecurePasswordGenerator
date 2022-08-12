@@ -28,8 +28,8 @@ def securePwdDemo():
 
 def getMaster(filename=".env"):
     if path.exists(filename):
-        with open(filename, "r") as f:
-            master = f.readline()
+        with open(filename, "r", encoding="utf-8") as file:
+            master = file.readline()
     else:
         raise FileNotFoundError("Master key not found")
     return master
@@ -89,23 +89,22 @@ def tests():
             print("Password is too short")
             debug(password, size)
             break
-        elif length > size:
+        if length > size:
             print("Password is too long")
             debug(password, size)
             break
-        elif password.value != pwd.decrypt():
+        if password.value != pwd.decrypt():
             print("Passwords are not equal")
             print(type(password), type(pwd.decrypt()))
             debug(password, size)
             break
-        else:
-            try:
-                if password.words[-1] not in password.value:
-                    print("Password fails to contain the last word")
-                    debug(password, size)
-                    break
-            except IndexError:
-                pass
+        try:
+            if password.words[-1] not in password.value:
+                print("Password fails to contain the last word")
+                debug(password, size)
+                break
+        except IndexError:
+            pass
         print(f"Password, {password.readable()}, is correct")
 
 
