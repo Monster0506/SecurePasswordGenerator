@@ -5,14 +5,17 @@ from securePassword import SecurePasword
 
 
 def securePwdDemo():
+    """"""
     username = "tjraklovits@gmail.com"
     website = "google.com"
     seed = 11
     # seed = None
     length = 32
-    pwd = SecurePasword(
-        username=username, website=website, length=length, master=getMaster(), seed=seed
-    )
+    pwd = SecurePasword(username=username,
+                        website=website,
+                        length=length,
+                        master=getMaster(),
+                        seed=seed)
     password = str(pwd).removeprefix("b'")
     password = password.removesuffix("'")
     print(password)
@@ -43,9 +46,10 @@ def demo():
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(
-        username=user_name, website=website_name, length=32, master=master
-    )
+    pwd = SecurePasword(username=user_name,
+                        website=website_name,
+                        length=32,
+                        master=master)
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
@@ -71,7 +75,9 @@ def tests():
     username = "test"
     for i in range(8, 1250):
         size = i
-        password = Password(username=username, length=size, website=website_name)
+        password = Password(username=username,
+                            length=size,
+                            website=website_name)
         pwd = SecurePasword(
             username=username,
             website=website_name,
