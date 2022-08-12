@@ -1,6 +1,4 @@
-﻿"""The goal of this program is to generate a random password, with an optional seed, that uses numbers and pronounceable sounds
-"""
-from os import path
+﻿from os import path
 from pwdGen import Password
 from encrypt import AESCipher
 from securePassword import SecurePasword
