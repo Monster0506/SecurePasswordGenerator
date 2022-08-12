@@ -28,7 +28,7 @@ def securePwdDemo():
 
 def getMaster(filename=".env"):
     if path.exists(filename):
-        with open(filename, "r", encoding="utf-8") as file:
+        with open(filename, "r") as file:
             master = file.readline()
     else:
         raise FileNotFoundError("Master key not found")
