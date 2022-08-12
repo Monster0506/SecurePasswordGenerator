@@ -6,6 +6,25 @@ from encrypt import AESCipher
 from securePassword import SecurePasword
 
 
+def securePwdDemo():
+    username = "tjraklovits@gmail.com"
+    website = "google.com"
+    seed = 11
+    # seed = None
+    length = 32
+    pwd = SecurePasword(
+        username=username, website=website, length=length, master=getMaster(), seed=seed
+    )
+    password = str(pwd).removeprefix("b'")
+    password = password.removesuffix("'")
+    print(password)
+    print(pwd.decrypt())
+
+    # print(decrypt(password, getMaster(), username))
+    # pwd0 = Password(username=username, website=website, length=length, seed=seed)
+    # print(pwd0.readable())
+
+
 def getMaster(filename=".env"):
     if path.exists(filename):
         with open(filename, "r") as f:
@@ -15,31 +34,24 @@ def getMaster(filename=".env"):
     return master
 
 
-def decrypt(encrypted, master=getMaster(), username="username"):
-    cipher = AESCipher(master, username)
-    return cipher.decrypt(encrypted)
-
-
 def demo():
     website_name = input("Website name: ")
     user_name = "TEST"
-    password = Password(length=32, username=user_name, seed=website_name)
+    password = Password(length=32, username=user_name, website=website_name)
     master = getMaster()
-    cipher = AESCipher(master)
+    cipher = AESCipher(master, user_name)
     encrypted = cipher.encrypt(password)
     decrypted = cipher.decrypt(encrypted)
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
     pwd = SecurePasword(
-        length=32, seed=website_name, master=getMaster(), username=user_name
+        username=user_name, website=website_name, length=32, master=master
     )
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
-    print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
-    print(f"Decrypted FAIL: {decrypt(pwd.hash, master='test', username=user_name)}")
-    print(f"Decrypted FAIL: {decrypt(pwd.hash, master=master, username='test')}")
+    # print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
 
 
 def debug(password, size):
@@ -51,13 +63,22 @@ def debug(password, size):
     print(f"Value: {password.value}")
 
 
+def decrypt(encrypted, master, username):
+    cipher = AESCipher(master, username)
+    return cipher.decrypt(encrypted)
+
+
 def tests():
     website_name = input("Website name: ")
+    username = "test"
     for i in range(8, 1250):
         size = i
-        password = Password(length=size, username="test", seed=website_name)
+        password = Password(username=username, length=size, website=website_name)
         pwd = SecurePasword(
-            length=size, username="test", seed=website_name, master=getMaster()
+            username=username,
+            website=website_name,
+            length=size,
+            master=getMaster(),
         )
         length = len(password)
         if length < size:
@@ -86,4 +107,5 @@ def tests():
 
 if __name__ == "__main__":
     # tests()
-    demo()
+    # demo()
+    securePwdDemo()

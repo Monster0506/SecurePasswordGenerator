@@ -4,42 +4,64 @@ from hashlib import sha256
 
 
 class Password(object):
-    def __init__(
-        self,
-        username,
-        length=32,
-        seed=None,
-    ):
-        _seed(username)
-        if length < 8:
-            raise ValueError("Password length must be at least 8 characters")
-        if seed:
-            value = str(seed) + str(username)
-            _seed(value)
+    def __init__(self, username: str, website: str, seed=None, length: int = 32):
 
+        # make sure length is greater than 8
+        if length < 8:
+            raise ValueError("Password length must be greater than 8 characters")
+
+        # set the seed
+        if seed:
+            value = sha256(
+                username.encode() + website.encode() + str(seed).encode()
+            ).hexdigest()
+        else:
+            value = sha256(username.encode() + website.encode()).hexdigest()
+        _seed(value)
+
+        # generics
+        self.username = username
+        self.website = website
+        self.seed = seed
         self.length = length
+
+        # sounds
         self.sounds = "bdfghjklmnprstvwyz"
         self.vowels = "aeiou"
-        words = self._gen_words()
-        self._true_words = words
-        self.words = []
-        self.value = self.generate()
-        self.username = username
 
-    def _gen_words(self):
+        # words
+        words = self._gen_words()
+        self.words = []
+        self._true_words = words
+
+        # actual password
+        self.value = self.generate()
+
+    def _gen_words(self) -> list:
+        """Generate the list of words to be used in the password
+
+        Returns:
+            list: A list of words to be used in the password
+        """
         words = []
-        for _ in range(self.length - 1 - (2 * self.length // 3)):
+        # the number of words is no greater than half the length of the password + 1
+        for _ in range(self.length - 1 - (self.length // 3)):
             words.append(self._gen_word())
         return words
 
-    def _gen_word(self):
+    def _gen_word(self) -> str:
+        """Generate a single word of the password
+
+        Returns:
+            str: A single word of the password
+        """
         word = ""
         word += choice(self.sounds)
         word += choice(self.vowels)
         word += choice(self.sounds)
         return word
 
-    def generate(self):
+    def generate(self) -> str:
         result = ""
         while len(result) < self.length and len(self._true_words) > 0:
             rand = random()
@@ -85,8 +107,3 @@ class Password(object):
 
     def __repr__(self) -> str:
         return self.value
-
-
-if __name__ == "__main__":
-    pwd = Password(seed="test", username="usename")
-    print(pwd)

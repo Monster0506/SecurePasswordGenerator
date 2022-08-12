@@ -6,8 +6,9 @@ from base64 import b64encode, b64decode
 
 
 class AESCipher(object):
-    def __init__(self, master="key", salt="salt"):
-        master = master.encode()
+    def __init__(self, master: str = "key", salt: str = "salt"):
+        master = PBKDF2(master, salt.encode(), 32)
+        salt = PBKDF2(salt, master, 32)
         self.bs = AES.block_size
         kdf = PBKDF2(master, salt, 32, 1000)
         self.key = kdf[:32]
@@ -37,11 +38,3 @@ class AESCipher(object):
 
     def __repr__(self) -> str:
         return self.password
-
-
-if __name__ == "__main__":
-    cipher = AESCipher("key")
-    encrypted = cipher.encrypt("Hello World")
-    print("Encrypted:", encrypted)
-    decrypted = cipher.decrypt(encrypted)
-    print("Decrypted:", decrypted)
