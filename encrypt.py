@@ -9,7 +9,7 @@ from Crypto import Random
 class AESCipher(object):
 
     def __init__(self, master: str = "key", salt: str = "salt"):
-        master_key = PBKDF2(master, salt, 32)
+        master_key = PBKDF2(master, salt.encode(), 32)
         salt_value = PBKDF2(salt, master_key, 32)
         self.block_size = AES.block_size
         kdf = PBKDF2(master_key, salt_value, 32, 1000)

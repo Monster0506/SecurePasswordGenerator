@@ -6,10 +6,9 @@ from securePassword import SecurePasword
 
 def securePwdDemo():
     """"""
-    username = "tjraklovits@gmail.com"
-    website = "google.com"
-    seed = 11
-    # seed = None
+    username = "username"
+    website = "site.com"
+    seed = None
     length = 32
     pwd = SecurePasword(username=username,
                         website=website,
@@ -22,6 +21,7 @@ def securePwdDemo():
     print(pwd.decrypt())
 
     # print(decrypt(password, getMaster(), username))
+    # print(decrypt(password, "test", username))
     # pwd0 = Password(username=username, website=website, length=length, seed=seed)
     # print(pwd0.readable())
 
@@ -66,7 +66,7 @@ def debug(password, size):
 
 
 def decrypt(encrypted, master, username):
-    cipher = AESCipher(master, username)
+    cipher = AESCipher(master=master, salt=username)
     return cipher.decrypt(encrypted)
 
 
