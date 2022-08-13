@@ -37,6 +37,7 @@ class Password:
 
         # generics
         self.username = username
+        self.length = length
         self.website = website
         self.private_key = private_key
         self.length = length
