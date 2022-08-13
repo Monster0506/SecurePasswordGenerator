@@ -8,13 +8,13 @@ def securePwdDemo():
     """"""
     username = "username"
     website = "site.com"
-    private_key = 10
+    seed = 10
     length = 32
     pwd = SecurePasword(username=username,
                         website=website,
                         length=length,
                         master=getMaster(),
-                        private_key=private_key)
+                        seed=seed)
     password = str(pwd).removeprefix("b'")
     password = password.removesuffix("'")
     print(password)
@@ -49,7 +49,7 @@ def demo():
     password = Password(length=32,
                         username=user_name,
                         website=website_name,
-                        private_key="test")
+                        seed="test")
     master = getMaster()
     cipher = AESCipher(master, user_name)
     encrypted = cipher.encrypt(password)
@@ -61,7 +61,7 @@ def demo():
                         website=website_name,
                         length=32,
                         master=master,
-                        private_key="test")
+                        seed="test")
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")

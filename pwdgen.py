@@ -12,7 +12,7 @@ class Password:
     def __init__(self,
                  username: str,
                  website: str,
-                 private_key,
+                 seed,
                  length: int = 32):
 
         # make sure length is greater than 8
@@ -23,23 +23,23 @@ class Password:
         # set the seed
         # combine the public keys of username and website with the private key
         # of the password and use the hash of the result as the seed
-        private_key = pbkdf2_hmac(
+        seed = pbkdf2_hmac(
             hash_name="sha256",
             password=str(
                 sha256((username + website +
-                        str(private_key)).encode()).hexdigest()).encode(),
+                        str(seed)).encode()).hexdigest()).encode(),
             salt=str(sha256(
                 (website + username).encode()).hexdigest()).encode(),
             iterations=length,
         )
 
-        _seed(private_key)
+        _seed(seed)
 
         # generics
         self.username = username
         self.length = length
         self.website = website
-        self.private_key = private_key
+        self.private_key = seed
         self.length = length
 
         # sounds

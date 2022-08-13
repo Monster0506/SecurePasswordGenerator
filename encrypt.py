@@ -8,7 +8,6 @@ from Crypto import Random
 
 
 class AESCipher(object):
-
     def __init__(self, master: str = "key", salt: str = "salt"):
         master_key = PBKDF2(master, salt.encode(), 32)
         salt_value = PBKDF2(salt, master_key, 32)
@@ -26,19 +25,18 @@ class AESCipher(object):
     def decrypt(self, enc):
         """Decrypt a encoding"""
         enc = b64decode(enc)
-        init_vector = enc[:self.block_size]
+        init_vector = enc[: self.block_size]
         cipher = AES.new(self.key, AES.MODE_GCM, init_vector)
-        return self._unpad(cipher.decrypt(
-            enc[self.block_size:])).decode("utf-8")
+        return self._unpad(cipher.decrypt(enc[self.block_size :])).decode("utf-8")
 
     def _pad(self, string: str):
         "Pad a string to 16 bytes"
-        return string + (self.block_size - len(string) %
-                         self.block_size) * chr(self.block_size -
-                                                len(string) % self.block_size)
+        return string + (self.block_size - len(string) % self.block_size) * chr(
+            self.block_size - len(string) % self.block_size
+        )
 
     @staticmethod
     def _unpad(string):
         """Unpad a string from 16 bytes"""
-        unpadded = string[:-ord(string[len(string) - 1:])]
+        unpadded = string[: -ord(string[len(string) - 1 :])]
         return unpadded

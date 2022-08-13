@@ -8,21 +8,21 @@ class SecurePasword:
         self,
         username: str,
         website: str,
-        private_key,
+        seed,
         length: int = 32,
         master: str = "key",
     ):
         self._password_object = Password(username=username,
                                          length=length,
                                          website=website,
-                                         private_key=private_key)
+                                         seed=seed)
         self.cipher = AESCipher(master=master, salt=username)
         self.hash = self.cipher.encrypt(self._password_object.value)
         self.username = username
         self.website = website
         self.length = length
         self.master = master
-        self.seed = private_key
+        self.seed = seed
 
     def decrypt(self) -> str:
         """Decrypt the password"""
