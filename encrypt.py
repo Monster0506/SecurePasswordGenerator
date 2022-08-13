@@ -1,5 +1,6 @@
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64encode, b64decode
+from hashlib import sha256
 
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
@@ -12,7 +13,7 @@ class AESCipher(object):
         master_key = PBKDF2(master, salt.encode(), 32)
         salt_value = PBKDF2(salt, master_key, 32)
         self.block_size = AES.block_size
-        kdf = PBKDF2(master_key, salt_value, 32, 1000)
+        kdf = PBKDF2(str(sha256(master_key).hexdigest()), salt_value, 32, 1000)
         self.key = kdf[:32]
 
     def encrypt(self, raw):

@@ -8,21 +8,29 @@ def securePwdDemo():
     """"""
     username = "username"
     website = "site.com"
-    seed = 10
+    private_key = 10
     length = 32
     pwd = SecurePasword(username=username,
                         website=website,
                         length=length,
                         master=getMaster(),
-                        seed=seed)
+                        private_key=private_key)
     password = str(pwd).removeprefix("b'")
     password = password.removesuffix("'")
     print(password)
     print(pwd.decrypt())
 
+    # pwd2 = 'KHdK+5szRE39TZw8hX3WwtvnW+sphW8EA8ZL8RGUoG/+ow1toENJQetJcV/qCdc\
+    #     D451csPeu4juIK6bNIowhPA=='
+    # print(decrypt(pwd2, getMaster(), username))
+
     # print(decrypt(password, getMaster(), username))
     # print(decrypt(password, "test", username))
-    # pwd0 = Password(username=username, website=website, length=length, seed=seed)
+
+    # pwd0 = Password(username=username,
+    #                 website=website,
+    #                 length=length,
+    #                 private_key=private_key)
     # print(pwd0.readable())
 
 
@@ -38,7 +46,10 @@ def getMaster(filename=".env"):
 def demo():
     website_name = input("Website name: ")
     user_name = "TEST"
-    password = Password(length=32, username=user_name, website=website_name)
+    password = Password(length=32,
+                        username=user_name,
+                        website=website_name,
+                        private_key="test")
     master = getMaster()
     cipher = AESCipher(master, user_name)
     encrypted = cipher.encrypt(password)
@@ -49,7 +60,8 @@ def demo():
     pwd = SecurePasword(username=user_name,
                         website=website_name,
                         length=32,
-                        master=master)
+                        master=master,
+                        private_key="test")
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
