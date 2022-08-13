@@ -1,5 +1,5 @@
 ﻿from os import path
-from pwdGen import Password
+from pwdgen import Password
 from encrypt import AESCipher
 from securePassword import SecurePasword
 
@@ -8,7 +8,7 @@ def securePwdDemo():
     """"""
     username = "username"
     website = "site.com"
-    seed = None
+    seed = 10
     length = 32
     pwd = SecurePasword(username=username,
                         website=website,

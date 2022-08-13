@@ -1,15 +1,11 @@
 from random import seed as _seed, choice, random
 from string import digits
-from hashlib import sha256
+from hashlib import sha256, pbkdf2_hmac
 
 
 class Password:
 
-    def __init__(self,
-                 username: str,
-                 website: str,
-                 seed=None,
-                 length: int = 32):
+    def __init__(self, username: str, website: str, seed, length: int = 32):
 
         # make sure length is greater than 8
         if length < 8:
@@ -17,12 +13,17 @@ class Password:
                 "Password length must be greater than 8 characters")
 
         # set the seed
-        if seed:
-            value = sha256(username.encode() + website.encode() +
-                           str(seed).encode()).hexdigest()
-        else:
-            value = sha256(username.encode() + website.encode()).hexdigest()
-        _seed(value)
+        # combine the public keys of username and website with the private key
+        # of the password and use the hash of the result as the seed
+        seed = pbkdf2_hmac(
+            "sha256",
+            str(sha256((username + website +
+                        str(seed)).encode()).hexdigest()).encode(),
+            str(sha256((website + username).encode()).hexdigest()).encode(),
+            length,
+        )
+
+        _seed(seed)
 
         # generics
         self.username = username
@@ -98,8 +99,8 @@ class Password:
         return result
 
     def readable(self):
-        """ Make the password readable by seperting the words with a space.
-        Return the password as a string. """
+        """Make the password readable by seperting the words with a space.
+        Return the password as a string."""
         new = self.value
         for word in self.words:
             new = new.replace(word, word + " ")

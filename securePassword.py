@@ -1,5 +1,5 @@
 from encrypt import AESCipher
-from pwdGen import Password
+from pwdgen import Password
 
 
 class SecurePasword:
@@ -8,8 +8,8 @@ class SecurePasword:
         self,
         username: str,
         website: str,
+        seed,
         length: int = 32,
-        seed=None,
         master: str = "key",
     ):
         self._password_object = Password(username=username,
