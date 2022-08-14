@@ -10,10 +10,12 @@ def securePwdDemo():
     website = "site.com"
     seed = 10
     length = 32
+    gen_code = None
     pwd = SecurePasword(username=username,
                         website=website,
                         length=length,
                         master=getMaster(),
+                        gen_code=gen_code,
                         seed=seed)
     password = str(pwd).removeprefix("b'")
     password = password.removesuffix("'")
@@ -43,31 +45,6 @@ def getMaster(filename=".env"):
     return master
 
 
-def demo():
-    website_name = input("Website name: ")
-    user_name = "TEST"
-    password = Password(length=32,
-                        username=user_name,
-                        website=website_name,
-                        seed="test")
-    master = getMaster()
-    cipher = AESCipher(master, user_name)
-    encrypted = cipher.encrypt(password)
-    decrypted = cipher.decrypt(encrypted)
-    print(f"Password: {password}")
-    print(f"Encrypted: {encrypted}")
-    print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(username=user_name,
-                        website=website_name,
-                        length=32,
-                        master=master,
-                        seed="test")
-
-    print(f"Encrypted: {pwd}")
-    print(f"Decrypted: {pwd.decrypt()}")
-    # print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
-
-
 def debug(password, size):
     length = len(password)
     print(f"Attempted length: {size}")
@@ -85,12 +62,18 @@ def decrypt(encrypted, master, username):
 def tests():
     website_name = input("Website name: ")
     username = "test"
+    seed = 10
+    gen_code = 100
     for i in range(8, 1250):
         size = i
         password = Password(username=username,
                             length=size,
-                            website=website_name)
+                            website=website_name,
+                            seed=seed,
+                            gen_code=gen_code)
         pwd = SecurePasword(
+            gen_code=gen_code,
+            seed=seed,
             username=username,
             website=website_name,
             length=size,
@@ -121,6 +104,5 @@ def tests():
 
 
 if __name__ == "__main__":
-    # tests()
-    # demo()
+    tests()
     securePwdDemo()

@@ -13,6 +13,7 @@ class Password:
                  username: str,
                  website: str,
                  seed,
+                 gen_code=None,
                  length: int = 32):
 
         # make sure length is greater than 8
@@ -23,17 +24,19 @@ class Password:
         # set the seed
         # combine the public keys of username and website with the private key
         # of the password and use the hash of the result as the seed
-        seed = pbkdf2_hmac(
+        self.seed = pbkdf2_hmac(
             hash_name="sha256",
             password=str(
-                sha256((username + website +
-                        str(seed)).encode()).hexdigest()).encode(),
+                sha256(
+                    (str(username).encode() + str(website).encode() +
+                     str(sha256(str(gen_code).encode()).hexdigest()).encode() +
+                     str(seed).encode())).hexdigest()).encode(),
             salt=str(sha256(
                 (website + username).encode()).hexdigest()).encode(),
             iterations=length,
         )
 
-        _seed(seed)
+        _seed(self.seed)
 
         # generics
         self.username = username

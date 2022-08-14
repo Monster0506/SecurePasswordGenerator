@@ -9,10 +9,12 @@ class SecurePasword:
         username: str,
         website: str,
         seed,
+        gen_code=None,
         length: int = 32,
         master: str = "key",
     ):
         self._password_object = Password(username=username,
+                                         gen_code=gen_code,
                                          length=length,
                                          website=website,
                                          seed=seed)
