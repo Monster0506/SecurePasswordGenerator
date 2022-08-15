@@ -8,15 +8,19 @@ from Crypto import Random
 
 
 class AESCipher(object):
-    def __init__(self, master, salt=b"insecure salt", secondary=""):
+    def __init__(self, master, salt=b"insecure salt", secondary: list=""):
+        secondaries = ""
+        for key in secondary:
+            secondaries += sha256(str(key).encode()).hexdigest()
+        
+        secondaries = sha256(str(secondaries).encode()).hexdigest().encode()
         # TODO: maybe make secondary be a list of secondary keys?
-        print("TODO: make secondary be a list of secondary keys?")
         salt = str(salt).encode()
         master_key = PBKDF2(master, str(salt).encode(), 32)
         salt_value = PBKDF2(str(salt).encode(), master_key, 32)
         self.block_size = AES.block_size
         kdf = PBKDF2(
-            str(sha256(master_key + str(secondary).encode()).hexdigest()),
+            str(sha256(master_key + secondaries).hexdigest()),
             salt_value,
             32,
             1000,

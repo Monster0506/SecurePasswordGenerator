@@ -10,7 +10,7 @@ class SecurePasword:
         username: str,
         website: str,
         length: int = 32,
-        secondary=None,
+        secondary="secondary",
         salt=b"insecure salt",
     ):
 
