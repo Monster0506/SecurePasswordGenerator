@@ -8,11 +8,17 @@ from Crypto import Random
 
 
 class AESCipher(object):
-    def __init__(self, master: str = "key", salt: str = "salt"):
-        master_key = PBKDF2(master, salt.encode(), 32)
-        salt_value = PBKDF2(salt, master_key, 32)
+    def __init__(self, master, salt=b"insecure salt", secondary=""):
+        salt = str(salt).encode()
+        master_key = PBKDF2(master, str(salt).encode(), 32)
+        salt_value = PBKDF2(str(salt).encode(), master_key, 32)
         self.block_size = AES.block_size
-        kdf = PBKDF2(str(sha256(master_key).hexdigest()), salt_value, 32, 1000)
+        kdf = PBKDF2(
+            str(sha256(master_key + str(secondary).encode()).hexdigest()),
+            salt_value,
+            32,
+            1000,
+        )
         self.key = kdf[:32]
 
     def encrypt(self, raw):
@@ -27,7 +33,7 @@ class AESCipher(object):
         enc = b64decode(enc)
         init_vector = enc[: self.block_size]
         cipher = AES.new(self.key, AES.MODE_GCM, init_vector)
-        return self._unpad(cipher.decrypt(enc[self.block_size :])).decode("utf-8")
+        return self._unpad(cipher.decrypt(enc[self.block_size :])).decode()
 
     def _pad(self, string: str):
         "Pad a string to 16 bytes"

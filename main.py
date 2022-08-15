@@ -9,29 +9,24 @@ def securePwdDemo():
     username = "username"
     website = "site.com"
     seed = 10
+    secondary = "a"
+    salt = "salt"
     length = 32
-    pwd = SecurePasword(username=username,
-                        website=website,
-                        length=length,
-                        master=getMaster(),
-                        seed=seed)
-    password = str(pwd).removeprefix("b'")
-    password = password.removesuffix("'")
-    print(password)
+    pwd = SecurePasword(
+        seed=seed,
+        master=getMaster(),
+        username=username,
+        website=website,
+        length=length,
+        secondary=secondary,
+        salt=salt,
+    )
+
+    hashed = str(pwd).removeprefix("b'")
+    hashed = hashed.removesuffix("'")
+    print(hashed)
     print(pwd.decrypt())
-
-    # pwd2 = 'KHdK+5szRE39TZw8hX3WwtvnW+sphW8EA8ZL8RGUoG/+ow1toENJQetJcV/qCdc\
-    #     D451csPeu4juIK6bNIowhPA=='
-    # print(decrypt(pwd2, getMaster(), username))
-
-    # print(decrypt(password, getMaster(), username))
-    # print(decrypt(password, "test", username))
-
-    # pwd0 = Password(username=username,
-    #                 website=website,
-    #                 length=length,
-    #                 private_key=private_key)
-    # print(pwd0.readable())
+    print(decrypt(pwd.hash, getMaster(), secondary=secondary, salt=salt))
 
 
 def getMaster(filename=".env"):
@@ -46,10 +41,9 @@ def getMaster(filename=".env"):
 def demo():
     website_name = input("Website name: ")
     user_name = "TEST"
-    password = Password(length=32,
-                        username=user_name,
-                        website=website_name,
-                        seed="test")
+    password = Password(
+        length=32, username=user_name, website=website_name, seed="test"
+    )
     master = getMaster()
     cipher = AESCipher(master, user_name)
     encrypted = cipher.encrypt(password)
@@ -57,11 +51,9 @@ def demo():
     print(f"Password: {password}")
     print(f"Encrypted: {encrypted}")
     print(f"Decrypted: {decrypted}")
-    pwd = SecurePasword(username=user_name,
-                        website=website_name,
-                        length=32,
-                        master=master,
-                        seed="test")
+    pwd = SecurePasword(
+        username=user_name, website=website_name, length=32, master=master, seed="test"
+    )
 
     print(f"Encrypted: {pwd}")
     print(f"Decrypted: {pwd.decrypt()}")
@@ -77,25 +69,35 @@ def debug(password, size):
     print(f"Value: {password.value}")
 
 
-def decrypt(encrypted, master, username):
-    cipher = AESCipher(master=master, salt=username)
+def decrypt(encrypted, master, secondary="", salt=b"insecure salt"):
+    cipher = AESCipher(master=master, secondary=secondary, salt=salt)
     return cipher.decrypt(encrypted)
 
 
 def tests():
+    # TODO: update tests with checking if encryption works
     website_name = input("Website name: ")
     username = "test"
-    for i in range(8, 1250):
+    seed = "seed"
+    secondary = "secondary"
+    for i in range(8, 550):
         size = i
-        password = Password(username=username,
-                            length=size,
-                            website=website_name)
+        password = Password(
+            length=size, username=username, website=website_name, seed=seed
+        )
         pwd = SecurePasword(
+            length=size,
             username=username,
             website=website_name,
-            length=size,
+            seed=seed,
             master=getMaster(),
         )
+        cipher = AESCipher(master=getMaster(), secondary=secondary)
+        encrypted = cipher.encrypt(password.value)
+
+        if decrypt(encrypted, getMaster(), secondary=secondary) != password.value:
+            print(f"{password.readable()} failed")
+            break
         length = len(password)
         if length < size:
             print("Password is too short")
@@ -122,5 +124,7 @@ def tests():
 
 if __name__ == "__main__":
     # tests()
+    # TODO: update tests with checking if encryption works
+    print("TODO: update tests with checking if encryption works")
     # demo()
     securePwdDemo()

@@ -4,21 +4,11 @@ from hashlib import sha256, pbkdf2_hmac
 
 
 class Password:
-    """
-    Generate a securely generated password with pronounceable sounds and
-    a private key
-    """
-
-    def __init__(self,
-                 username: str,
-                 website: str,
-                 seed,
-                 length: int = 32):
+    def __init__(self, seed, username: str, website: str, length: int = 32):
 
         # make sure length is greater than 8
         if length < 8:
-            raise ValueError(
-                "Password length must be greater than 8 characters")
+            raise ValueError("Password length must be greater than 8 characters")
 
         # set the seed
         # combine the public keys of username and website with the private key
@@ -26,10 +16,9 @@ class Password:
         seed = pbkdf2_hmac(
             hash_name="sha256",
             password=str(
-                sha256((username + website +
-                        str(seed)).encode()).hexdigest()).encode(),
-            salt=str(sha256(
-                (website + username).encode()).hexdigest()).encode(),
+                sha256((username + website + str(seed)).encode()).hexdigest()
+            ).encode(),
+            salt=str(sha256((str(seed) + username).encode()).hexdigest()).encode(),
             iterations=length,
         )
 
