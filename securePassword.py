@@ -1,6 +1,5 @@
 from encrypt import AESCipher
 from pwdgen import Password
-from hashlib import sha256
 
 
 class _Dummy(object):
@@ -15,7 +14,7 @@ class SecurePasword:
         username: str,
         website: str,
         length: int = 32,
-        secondary="secondary",
+        secondary=["secondary"],
         salt=b"insecure salt",
         password = None,
     ):
