@@ -1,6 +1,11 @@
 from encrypt import AESCipher
 from pwdgen import Password
+from hashlib import sha256
 
+
+class _Dummy(object):
+    def __init__(self, password):
+        self.value = password
 
 class SecurePasword:
     def __init__(
@@ -12,13 +17,18 @@ class SecurePasword:
         length: int = 32,
         secondary="secondary",
         salt=b"insecure salt",
+        password = None,
     ):
-
-        self._password_object = Password(
-            username=username, length=length, website=website, seed=seed
-        )
+        if not password:
+            self._password_object = Password(
+                username=username, length=length, website=website, seed=seed
+            )
+        else:
+            self._password_object = _Dummy(password)
         self.cipher = AESCipher(master=master, salt=salt, secondary=secondary)
         self.hash = self.cipher.encrypt(self._password_object.value)
+        self.website = website
+        self.username = username
 
     def decrypt(self) -> str:
         """Decrypt the password"""
@@ -29,3 +39,10 @@ class SecurePasword:
 
     def __len__(self) -> int:
         return len(self.hash)
+
+    def __dict__(self):
+        hashed = self.hash.decode().replace("b'", "").replace("'", "")
+        username = self.username
+        website = self.website
+        line = {"hash": hashed, "username": username, "website": website}
+        return line

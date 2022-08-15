@@ -1,6 +1,6 @@
 ﻿TESTING = False
 DEMO = False
-SECUREDEMO = True
+SECUREDEMO = False
 from os import path
 from pwdgen import Password
 from encrypt import AESCipher
