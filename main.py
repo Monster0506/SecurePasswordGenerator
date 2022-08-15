@@ -12,7 +12,6 @@ def securePwdDemo():
     secondary = "a"
     salt = "salt"
     length = 32
-<<<<<<< HEAD
     pwd = SecurePasword(
         seed=seed,
         master=getMaster(),
@@ -26,18 +25,6 @@ def securePwdDemo():
     hashed = str(pwd).removeprefix("b'")
     hashed = hashed.removesuffix("'")
     print(hashed)
-=======
-    gen_code = None
-    pwd = SecurePasword(username=username,
-                        website=website,
-                        length=length,
-                        master=getMaster(),
-                        gen_code=gen_code,
-                        seed=seed)
-    password = str(pwd).removeprefix("b'")
-    password = password.removesuffix("'")
-    print(password)
->>>>>>> 157203cdbd4b1e0ff0a91c766f9eeb8fd0230da9
     print(pwd.decrypt())
     print(decrypt(pwd.hash, getMaster(), secondary=secondary, salt=salt))
 
@@ -51,7 +38,6 @@ def getMaster(filename=".env"):
     return master
 
 
-<<<<<<< HEAD
 def demo():
     website_name = input("Website name: ")
     user_name = "TEST"
@@ -74,8 +60,6 @@ def demo():
     # print(f"Decrypted: {decrypt(pwd.hash, master=master, username=user_name)}")
 
 
-=======
->>>>>>> 157203cdbd4b1e0ff0a91c766f9eeb8fd0230da9
 def debug(password, size):
     length = len(password)
     print(f"Attempted length: {size}")
@@ -94,7 +78,6 @@ def tests():
     # TODO: update tests with checking if encryption works
     website_name = input("Website name: ")
     username = "test"
-<<<<<<< HEAD
     seed = "seed"
     secondary = "secondary"
     for i in range(8, 550):
@@ -104,20 +87,6 @@ def tests():
         )
         pwd = SecurePasword(
             length=size,
-=======
-    seed = 10
-    gen_code = 100
-    for i in range(8, 1250):
-        size = i
-        password = Password(username=username,
-                            length=size,
-                            website=website_name,
-                            seed=seed,
-                            gen_code=gen_code)
-        pwd = SecurePasword(
-            gen_code=gen_code,
-            seed=seed,
->>>>>>> 157203cdbd4b1e0ff0a91c766f9eeb8fd0230da9
             username=username,
             website=website_name,
             seed=seed,
@@ -154,12 +123,8 @@ def tests():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     # tests()
     # TODO: update tests with checking if encryption works
     print("TODO: update tests with checking if encryption works")
     # demo()
-=======
-    tests()
->>>>>>> 157203cdbd4b1e0ff0a91c766f9eeb8fd0230da9
     securePwdDemo()
