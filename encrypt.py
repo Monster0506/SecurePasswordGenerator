@@ -9,6 +9,8 @@ from Crypto import Random
 
 class AESCipher(object):
     def __init__(self, master, salt=b"insecure salt", secondary=""):
+        #TODO: maybe make secondary be a list of secondary keys?
+        print("TODO: make secondary be a list of secondary keys?")
         salt = str(salt).encode()
         master_key = PBKDF2(master, str(salt).encode(), 32)
         salt_value = PBKDF2(str(salt).encode(), master_key, 32)
