@@ -1,17 +1,17 @@
 from os import path
-import simplejson as json
+import json 
 from securePassword import SecurePasword
 from securePassword import AESCipher
 
 
 # testing flags. Ignore these
 __DEBUG = False
-__GEN_TO_FILE_TEST = True
-__DECRYPT_FROM_FILE_TEST = True
-__DECRYPT_TEST = True
+__GEN_TO_FILE_TEST = False
+__DECRYPT_FROM_FILE_TEST = False
+__DECRYPT_TEST = False
 __GEN_FROM_PASSWORD_TEST = True
 
-# this is the default salt value used for encryption. This can be changed to any value. 
+# this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
 DEFAULT_SALT = b"insecure salt"
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                 username="Demo User",
                 website="example.com",
                 seed=["demo", "test", "example"],
-                password="test",
+                password="demo",
             )
             store(filename, password, write_non_exisiting=True)
         if __DECRYPT_FROM_FILE_TEST:
