@@ -1,6 +1,6 @@
 from os import path
 try:
-    import simplejson as json
+    import simplejson as json # type: ignore
 except ImportError:
     import json
 from securePassword import SecurePasword
