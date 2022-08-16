@@ -1,5 +1,8 @@
 from os import path
-import json 
+try:
+    import simplejson as json
+except ImportError:
+    import json
 from securePassword import SecurePasword
 from securePassword import AESCipher
 
