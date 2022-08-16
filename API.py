@@ -1,6 +1,7 @@
 from os import path
+
 try:
-    import simplejson as json # type: ignore
+    import simplejson as json  # type: ignore
 except ImportError:
     import json
 from securePassword import SecurePasword
@@ -21,6 +22,7 @@ DEFAULT_SALT = b"insecure salt"
 # this is the default secondary value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
 DEFAULT_SECONDARY = ["secondary"]
+
 
 def new(
     master,

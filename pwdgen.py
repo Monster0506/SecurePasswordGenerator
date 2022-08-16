@@ -9,7 +9,7 @@ class Password:
         seeds = ""
         for key in seed:
             seeds += sha256(str(key).encode()).hexdigest()
-            
+
         # make sure length is greater than 8
         if length < 8:
             raise ValueError("Password length must be greater than 8 characters")
@@ -20,7 +20,8 @@ class Password:
         self.seed = pbkdf2_hmac(
             hash_name="sha256",
             password=str(
-                sha256((username + website + seeds).encode()).hexdigest()).encode(),
+                sha256((username + website + seeds).encode()).hexdigest()
+            ).encode(),
             salt=str(sha256((seeds + username).encode()).hexdigest()).encode(),
             iterations=length,
         )

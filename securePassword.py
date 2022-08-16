@@ -6,6 +6,7 @@ class _Dummy(object):
     def __init__(self, password):
         self.value = password
 
+
 class SecurePasword:
     def __init__(
         self,
@@ -16,7 +17,7 @@ class SecurePasword:
         length: int = 32,
         secondary=["secondary"],
         salt=b"insecure salt",
-        password = None,
+        password=None,
     ):
         if not password:
             self._password_object = Password(
