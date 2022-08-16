@@ -18,6 +18,9 @@ __GEN_FROM_PASSWORD_TEST = True
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
 DEFAULT_SALT = b"insecure salt"
 
+# this is the default secondary value used for encryption. This can be changed to any value.
+# Please, please, please, do not use this, as it is insecure and can be easily cracked.
+DEFAULT_SECONDARY = ["secondary"]
 
 def new(
     master,
@@ -25,7 +28,7 @@ def new(
     website: str,
     seed,
     length: int = 32,
-    secondary=["secondary"],
+    secondary=DEFAULT_SECONDARY,
     salt=DEFAULT_SALT,
     password=None,
 ):
@@ -35,9 +38,9 @@ def new(
         master (any): The master key to use for encryption
         username (str): The username. Used for generating the password
         website (str): The website. Used for generating the password. Can be anything, if consistent.
-        seed (Iterable): The seed to use. Used for generating different passwords with the same username. An iterable of any type.
+        seed (Iterable | str | list): The seed to use. Used for generating different passwords with the same username. An iterable of any type.
         length (int, optional): The length of the password. Defaults to 32.
-        secondary (Iterable, optional): Additional encryption values to prevent bruteforcing master. Defaults to ["secondary"]. An iterable of any type.
+        secondary (Iterable | str | list, optional): Additional encryption values to prevent bruteforcing master. Defaults to DEFAULT_SECONDARY. An iterable of any type.
         salt (bytes, optional): The salt for the password. Defaults to DEFAULT_SALT.
         password (str | bytes | None, optional): If None, generates a secure password. Else, this is the password to be encrypted. Defaults to None.
 
@@ -96,14 +99,14 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
 
 
 def decrypt_file(
-    filename: str, master, secondary: list = ["secondary"], salt=DEFAULT_SALT
+    filename: str, master, secondary: list = DEFAULT_SECONDARY, salt=DEFAULT_SALT
 ):
     """Decrypt an entire json file stored with store()
 
     Args:
         filename (str): The name of the file to decrypt
         master (any): The master key that was used to encrypt the hashes
-        secondary (list, optional): The secondary keys used to encrypt the hashes. Defaults to ["secondary"].
+        secondary (list, optional): The secondary keys used to encrypt the hashes. Defaults to DEFAULT_SECONDARY.
         salt (bytes, optional): The salt used to salt the encrypted hashes. Defaults to DEFAULT_SALT.
 
     Yields:
@@ -114,13 +117,13 @@ def decrypt_file(
         yield cipher.decrypt(dictionary["hash"])
 
 
-def decrypt(encrypted, master, secondary=["secondary"], salt=DEFAULT_SALT):
+def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
     """Decrypt a encrypted hash.
 
     Args:
         encrypted (str): The encrypted hash
         master (any): The master key that was used to encrypt the hash
-        secondary (list, optional): The secondary keys used to encrypt the hash. Defaults to ["secondary"].
+        secondary (list, optional): The secondary keys used to encrypt the hash. Defaults to DEFAULT_SECONDARY.
         salt (bytes, optional): The salt used to salt the encrypted hash. Defaults to DEFAULT_SALT.
 
     Returns:
@@ -163,7 +166,7 @@ if __name__ == "__main__":
                 decrypt(
                     encrypted="8S6sC1pR9YGl2Bv+rWTewHNNrC8LtH6NuSHg3MtOv44=",
                     master=master,
-                    secondary=["secondary"],
+                    secondary=DEFAULT_SECONDARY,
                     salt=b"insecure salt",
                 )
             )
