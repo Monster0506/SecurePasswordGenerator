@@ -97,7 +97,7 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
     if path.exists(filename):
         _write(filename, password)
         return
-    raise FileNotFoundError("File: {} not found".format(filename))
+    raise FileNotFoundError(f"File: {filename} not found")
 
 
 def decrypt_file(

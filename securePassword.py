@@ -15,16 +15,18 @@ class SecurePasword:
         username: str,
         website: str,
         length: int = 32,
-        secondary=["secondary"],
+        secondary=None,
         salt=b"insecure salt",
         password=None,
     ):
-        if not password:
-            self._password_object = Password(
-                username=username, length=length, website=website, seed=seed
-            )
-        else:
-            self._password_object = _Dummy(password)
+        if secondary is None:
+            secondary = ["secondary"]
+        self._password_object = (
+            _Dummy(password)
+            if password
+            else Password(username=username, length=length, website=website, seed=seed)
+        )
+
         self.cipher = AESCipher(master=master, salt=salt, secondary=secondary)
         self.hash = self.cipher.encrypt(self._password_object.value)
         self.website = website
@@ -44,5 +46,4 @@ class SecurePasword:
         hashed = self.hash.decode().replace("b'", "").replace("'", "")
         username = self.username
         website = self.website
-        line = {"hash": hashed, "username": username, "website": website}
-        return line
+        return {"hash": hashed, "username": username, "website": website}

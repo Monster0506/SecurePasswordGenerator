@@ -1,4 +1,6 @@
-﻿TESTING = False
+﻿import contextlib
+
+TESTING = False
 DEMO = False
 SECUREDEMO = False
 from os import path
@@ -33,11 +35,10 @@ def securePwdDemo():
 
 
 def getMaster(filename=".env"):
-    if path.exists(filename):
-        with open(filename, "r") as file:
-            master = file.readline()
-    else:
+    if not path.exists(filename):
         raise FileNotFoundError("Master key not found")
+    with open(filename, "r") as file:
+        master = file.readline()
     return master
 
 
@@ -78,16 +79,14 @@ def decrypt(encrypted, master, secondary="", salt=b"insecure salt"):
 
 
 def test_secondary(pwd, password, size):
-    try:
+    with contextlib.suppress(UnicodeDecodeError):
         if (
             AESCipher(master=getMaster(), secondary="FakeSecondary").decrypt(pwd.hash)
             == password.value
         ):
             print("Secondary key failed to prevent decryption")
             return True
-    except UnicodeDecodeError:
-        pass
-    try:
+    with contextlib.suppress(UnicodeDecodeError):
         if decrypt(pwd.hash, getMaster(), secondary="badSecondary") == password.value:
             print(f"Encryption with a secondary failed for {password.readable()}")
             print("Secondary has no effect")
@@ -97,8 +96,6 @@ def test_secondary(pwd, password, size):
             )
             print(pwd.hash)
             return True
-    except UnicodeDecodeError:
-        pass
     return False
 
 
@@ -140,13 +137,11 @@ def test_decryption(decrypted, password, size, pwd, encrypted, secondary):
 
 
 def test_generation(password, size):
-    try:
+    with contextlib.suppress(IndexError):
         if password.words[-1] not in password.value:
             print("Password fails to contain the last word")
             debug(password, size)
             return True
-    except IndexError:
-        pass
     for word in password.words:
         if word not in password.value:
             print(f"Password fails to contain {word}")
@@ -160,19 +155,18 @@ def test_encryption(password, size, pwd, encrypted, secondary, decrypted):
         print(
             f"{password.readable()} hash failed to be encrypted with a different hash"
         )
+
         return True
-    try:
+    with contextlib.suppress(UnicodeDecodeError):
         if (
             AESCipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash)
             == password.value
         ):
-            print(f"Master key failed to prevent decryption")
+            print("Master key failed to prevent decryption")
             debug(password, size)
             print(decrypted)
             print(AESCipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash))
             return True
-    except UnicodeDecodeError:
-        pass
 
 
 def tests():
@@ -186,6 +180,7 @@ def tests():
         password = Password(
             length=size, username=username, website=website_name, seed=seed
         )
+
         pwd = SecurePasword(
             length=size,
             username=username,
@@ -194,6 +189,7 @@ def tests():
             secondary=secondary,
             master=getMaster(),
         )
+
         encrypted = cipher.encrypt(password.value)
         decrypted = decrypt(pwd.hash, getMaster(), secondary=secondary)
         length = len(password)
@@ -207,7 +203,7 @@ def tests():
             break
         if test_encryption(password, size, pwd, encrypted, secondary, decrypted):
             break
-        print(f"Password and encryption are correct")
+        print("Password and encryption are correct")
 
 
 if __name__ == "__main__":

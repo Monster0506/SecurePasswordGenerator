@@ -6,9 +6,7 @@ from hashlib import sha256, pbkdf2_hmac
 class Password:
     def __init__(self, seed: list, username: str, website: str, length: int = 32):
 
-        seeds = ""
-        for key in seed:
-            seeds += sha256(str(key).encode()).hexdigest()
+        seeds = "".join(sha256(str(key).encode()).hexdigest() for key in seed)
 
         # make sure length is greater than 8
         if length < 8:
@@ -53,12 +51,7 @@ class Password:
         Returns:
             list: A list of words to be used in the password
         """
-        words = []
-        # the number of words is no greater than half the length of
-        # the password + 1
-        for _ in range(self.length - 1 - (self.length // 3)):
-            words.append(self._gen_word())
-        return words
+        return [self._gen_word() for _ in range(self.length - 1 - self.length // 3)]
 
     def _gen_word(self) -> str:
         """Generate a single word of the password
@@ -107,7 +100,7 @@ class Password:
         Return the password as a string."""
         new = self.value
         for word in self.words:
-            new = new.replace(word, word + " ")
+            new = new.replace(word, f"{word} ")
         return new
 
     def __str__(self) -> str:

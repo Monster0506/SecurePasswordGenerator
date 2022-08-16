@@ -9,21 +9,19 @@ from Crypto import Random
 
 class AESCipher(object):
     def __init__(self, master, salt=b"insecure salt", secondary: list = ""):
-        secondaries = ""
-        for key in secondary:
-            secondaries += sha256(str(key).encode()).hexdigest()
+        secondaries = "".join(
+            sha256(str(key).encode()).hexdigest() for key in secondary
+        )
 
-        secondaries = sha256(str(secondaries).encode()).hexdigest().encode()
+        secondaries = sha256(secondaries.encode()).hexdigest().encode()
         salt = str(salt).encode()
         master_key = PBKDF2(master, str(salt).encode(), 32)
         salt_value = PBKDF2(str(salt).encode(), master_key, 32)
         self.block_size = AES.block_size
         kdf = PBKDF2(
-            str(sha256(master_key + secondaries).hexdigest()),
-            salt_value,
-            32,
-            1000,
+            str(sha256(master_key + secondaries).hexdigest()), salt_value, 32, 1000
         )
+
         self.key = kdf[:32]
 
     def encrypt(self, raw):
@@ -49,5 +47,6 @@ class AESCipher(object):
     @staticmethod
     def _unpad(string):
         """Unpad a string from 16 bytes"""
-        unpadded = string[: -ord(string[len(string) - 1 :])]
-        return unpadded
+        return string[
+            : -ord(string[len(string) - 1 :])
+        ]  # sourcery skip: simplify-negative-index
