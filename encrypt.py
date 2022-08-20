@@ -1,6 +1,7 @@
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64encode, b64decode
 from hashlib import sha256
+from os import stat
 
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
@@ -8,7 +9,9 @@ from Crypto import Random
 
 
 class AESCipher(object):
-    def __init__(self, master, salt=b"insecure salt", secondary: list = ""):
+    def __init__(
+        self, master, salt=b"insecure salt", secondary: list = "", public="public"
+    ):
         secondaries = "".join(
             sha256(str(key).encode()).hexdigest() for key in secondary
         )
@@ -22,6 +25,9 @@ class AESCipher(object):
             str(sha256(master_key + secondaries).hexdigest()), salt_value, 32, 1000
         )
 
+        # create a fingerprint phrase for verifying the encryption
+        fingerprint = sha256(kdf + str(public).encode()).hexdigest()
+        self.fingerprint = fingerprint
         self.key = kdf[:32]
 
     def encrypt(self, raw):
@@ -50,3 +56,8 @@ class AESCipher(object):
         return string[
             : -ord(string[len(string) - 1 :])
         ]  # sourcery skip: simplify-negative-index
+
+    def verify_fingerprint(self, fingerprint):
+        return self.fingerprint == fingerprint
+
+    

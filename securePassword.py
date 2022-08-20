@@ -2,6 +2,7 @@ from encrypt import AESCipher
 from pwdgen import Password
 
 
+
 class _Dummy(object):
     def __init__(self, password):
         self.value = password
@@ -31,6 +32,7 @@ class SecurePasword:
         self.hash = self.cipher.encrypt(self._password_object.value)
         self.website = website
         self.username = username
+        self.fingerprint = self.cipher.fingerprint
 
     def decrypt(self) -> str:
         """Decrypt the password"""
@@ -46,4 +48,10 @@ class SecurePasword:
         hashed = self.hash.decode().replace("b'", "").replace("'", "")
         username = self.username
         website = self.website
-        return {"hash": hashed, "username": username, "website": website}
+        fingerprint = self.fingerprint
+        return {
+            "hash": hashed,
+            "username": username,
+            "website": website,
+            "fingerprint": fingerprint,
+        }

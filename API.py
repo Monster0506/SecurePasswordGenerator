@@ -1,4 +1,5 @@
 from os import path
+from random import randint
 
 try:
     import simplejson as json  # type: ignore
@@ -17,6 +18,7 @@ __GEN_FROM_PASSWORD_TEST = False
 __ENCRYPT_DECRYPT_TEST = False
 __DECRYPT_BY_WEBSITE_TEST = False
 __DECRYPT_BY_USERNAME_TEST = False
+__VERIFY_FINGERPRINT_TEST = False
 
 # this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
@@ -25,6 +27,19 @@ DEFAULT_SALT = b"insecure salt"
 # this is the default secondary value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
 DEFAULT_SECONDARY = ["secondary"]
+
+
+def verify_fingerprint(cipher: SecurePasword, fingerprint: str):
+    """Verify that a cipher has the same fingerprint as the one provided.
+
+    Args:
+        cipher (SecurePasword): The cipher to verify
+        fingerprint (str): The fingerprint to verify against
+
+    Returns:
+        bool: Whether the cipher has the same fingerprint as the one provided.
+    """
+    return cipher.verify_fingerprint(fingerprint)
 
 
 def set_global_master(filename: str):
@@ -223,7 +238,7 @@ if __name__ == "__main__":
         if __GEN_TO_FILE_TEST:
             password = new(
                 master=master,
-                username="username",
+                username=str(randint(0, 100)),
                 website="site.com",
                 seed=["value", "test", "test"],
             )
@@ -239,8 +254,8 @@ if __name__ == "__main__":
             )
             store(filename, password, write_non_exisiting=True)
         if __DECRYPT_FROM_FILE_TEST:
-            for password in decrypt_file(filename=filename, master=master):
-                with open("test.txt", "a") as file:
+            with open("test.txt", "w") as file:
+                for password in decrypt_file(filename=filename, master=master):
                     print(password)
                     file.write(password + "\n")
         if __DECRYPT_TEST:
@@ -274,3 +289,13 @@ if __name__ == "__main__":
             values = decrypt_file_by_username(filename, username, master)
             for value in values:
                 print(value)
+        if __VERIFY_FINGERPRINT_TEST:
+            cipher = AESCipher(
+                master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY
+            )
+            print(
+                verify_fingerprint(
+                    cipher,
+                    "00ec4f0e4738649279f33c9d07ef8feec1dd97788551c35f33d2b0023e3e217e",
+                )
+            )
