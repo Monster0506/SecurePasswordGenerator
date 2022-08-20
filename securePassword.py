@@ -19,6 +19,7 @@ class SecurePasword:
         secondary=None,
         salt=b"insecure salt",
         password=None,
+        public = "public",
     ):
         if secondary is None:
             secondary = ["secondary"]
@@ -28,7 +29,7 @@ class SecurePasword:
             else Password(username=username, length=length, website=website, seed=seed)
         )
 
-        self.cipher = AESCipher(master=master, salt=salt, secondary=secondary)
+        self.cipher = AESCipher(master=master, salt=salt, secondary=secondary, public=public)
         self.hash = self.cipher.encrypt(self._password_object.value)
         self.website = website
         self.username = username

@@ -78,6 +78,7 @@ def new(
     secondary=DEFAULT_SECONDARY,
     salt=DEFAULT_SALT,
     password=None,
+    public = "public",
 ):
     """This is a constructor for SecurePasword
 
@@ -90,6 +91,7 @@ def new(
         secondary (Iterable | str | list, optional): Additional encryption values to prevent bruteforcing master. Defaults to DEFAULT_SECONDARY. An iterable of any type.
         salt (bytes, optional): The salt for the password. Defaults to DEFAULT_SALT.
         password (str | bytes | None, optional): If None, generates a secure password. Else, this is the password to be encrypted. Defaults to None.
+        public (str, optional): The public key to use for encryption. Defaults to "public".
 
     Returns:
         SecurePassword: The SecurePassword object, represented as a hash.
@@ -103,6 +105,7 @@ def new(
         secondary=secondary,
         salt=salt,
         password=password,
+        public=public,
     )
     return password
 

@@ -57,7 +57,7 @@ class AESCipher(object):
             : -ord(string[len(string) - 1 :])
         ]  # sourcery skip: simplify-negative-index
 
-    def verify_fingerprint(self, fingerprint):
+    def verify_fingerprint(self, fingerprint: str):
         return self.fingerprint == fingerprint
 
     
