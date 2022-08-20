@@ -8,12 +8,15 @@ from securePassword import SecurePasword
 from securePassword import AESCipher
 
 
-# testing flags. Ignore these
+# testing flags. Ignore these please
 __DEBUG = False
 __GEN_TO_FILE_TEST = False
 __DECRYPT_FROM_FILE_TEST = False
 __DECRYPT_TEST = False
-__GEN_FROM_PASSWORD_TEST = True
+__GEN_FROM_PASSWORD_TEST = False
+__ENCRYPT_DECRYPT_TEST = False
+__DECRYPT_BY_WEBSITE_TEST = False
+__DECRYPT_BY_USERNAME_TEST = False
 
 # this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
@@ -24,8 +27,35 @@ DEFAULT_SALT = b"insecure salt"
 DEFAULT_SECONDARY = ["secondary"]
 
 
+def set_global_master(filename: str):
+    """
+    Set the master key for a file.
+    """
+    with open(filename, "r") as file:
+        data = file.readline()
+
+    global master
+    master = data
+
+
+def encrypt(value, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
+    """Encrypt a value.
+
+    Args:
+        value (any): The value to encrypt
+        master (any): The master key to use for encryption
+        secondary (list, optional): The secondary keys to use for encryption. Defaults to DEFAULT_SECONDARY.
+        salt (bytes, optional): The salt to use for encryption. Defaults to DEFAULT_SALT.
+
+    Returns:
+        str: The encrypted value
+    """
+    cipher = AESCipher(master=master, salt=salt, secondary=secondary)
+    return cipher.encrypt(value)
+
+
 def new(
-    master,
+    master,  # master key
     username: str,
     website: str,
     seed,
@@ -66,9 +96,9 @@ def _write(filename, password):
     """The internal function for writing to a file"""
     with open(filename, "r") as file:
         data = json.load(file)
-    data.append(password.__dict__())
+    data.append(password._store())
     with open(filename, "w") as file:
-        json.dump(data, file)
+        json.dump(data, file, indent=4)
 
 
 def store(filename: str, password: SecurePasword, write_non_exisiting=False):
@@ -100,6 +130,32 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
     raise FileNotFoundError(f"File: {filename} not found")
 
 
+def decrypt_file_by_website(
+    filename: str,
+    website: str,
+    master,
+    secondary: list = DEFAULT_SECONDARY,
+    salt=DEFAULT_SALT,
+):
+    """Decrypt every password in a file that matches the website.
+
+    Args:
+        filename (str): The filename to decrypt
+        website (str): The string to match against the website key
+        master (ANY): The master key to use for decryption
+        secondary (list | string | Iterable, optional): The secondary key used for decryption. Defaults to DEFAULT_SECONDARY.
+        salt (list | string | Iterable, optional): The salt value used for encryption. Defaults to DEFAULT_SALT.
+
+    Yields:
+        string, username: the decrypted password and the username
+    """
+    for dictionary in json.load(open(filename)):
+        if dictionary["website"] == website:
+            yield decrypt(dictionary["hash"], master, secondary, salt), dictionary[
+                "username"
+            ]
+
+
 def decrypt_file(
     filename: str, master, secondary: list = DEFAULT_SECONDARY, salt=DEFAULT_SALT
 ):
@@ -115,8 +171,33 @@ def decrypt_file(
         str: The decrypted passwords
     """
     for dictionary in json.load(open(filename)):
-        cipher = AESCipher(master=master, salt=salt, secondary=secondary)
-        yield cipher.decrypt(dictionary["hash"])
+        yield decrypt(dictionary["hash"], master, secondary, salt)
+
+
+def decrypt_file_by_username(
+    filename: str,
+    username: str,
+    master,
+    secondary: list = DEFAULT_SECONDARY,
+    salt=DEFAULT_SALT,
+):
+    """Decrypt every password in a file that matches the username.
+
+    Args:
+        filename (str): The filename to decrypt
+        username (str): The string to match against the username key
+        master (ANY): the master key to use for decryption
+        secondary (list | str | Iterable, optional): The secondary key the password was encrypted with. Defaults to DEFAULT_SECONDARY.
+        salt (list | str | Iterable, optional): The salt values used to encrypt the password. Defaults to DEFAULT_SALT.
+
+    Yields:
+        string, string: The decrypted password and the username
+    """
+    for dictionary in json.load(open(filename)):
+        if dictionary["username"] == username:
+            yield decrypt(dictionary["hash"], master, secondary, salt), dictionary[
+                "website"
+            ]
 
 
 def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
@@ -136,9 +217,8 @@ def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
 
 
 if __name__ == "__main__":
-    with open(".env", "r") as file:
-        master = file.readline()
     filename = "test.json"
+    set_global_master(".env")
     if __DEBUG:
         if __GEN_TO_FILE_TEST:
             password = new(
@@ -172,3 +252,25 @@ if __name__ == "__main__":
                     salt=b"insecure salt",
                 )
             )
+        if __ENCRYPT_DECRYPT_TEST:
+            encrypted = encrypt(
+                value="test",
+                master=master,
+                secondary=DEFAULT_SECONDARY,
+                salt=DEFAULT_SALT,
+            )
+            print(encrypted)
+            decrypted = decrypt(
+                encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT
+            )
+            print(decrypted)
+        if __DECRYPT_BY_WEBSITE_TEST:
+            website = "example.com"
+            values = decrypt_file_by_website(filename, website, master)
+            for value in values:
+                print(value)
+        if __DECRYPT_BY_USERNAME_TEST:
+            username = "Demo User"
+            values = decrypt_file_by_username(filename, username, master)
+            for value in values:
+                print(value)

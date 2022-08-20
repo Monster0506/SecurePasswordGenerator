@@ -42,7 +42,7 @@ class SecurePasword:
     def __len__(self) -> int:
         return len(self.hash)
 
-    def __dict__(self):
+    def _store(self):
         hashed = self.hash.decode().replace("b'", "").replace("'", "")
         username = self.username
         website = self.website
