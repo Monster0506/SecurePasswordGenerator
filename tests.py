@@ -128,5 +128,5 @@ def test_fingerprints():
 
 
 if __name__ == "__main__":
-    # tests()
-    write_master(master_file, "abcdef", "test")
+    tests()
+    # write_master(master_file, "abcdef", "test")
