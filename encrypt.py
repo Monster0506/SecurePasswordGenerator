@@ -25,7 +25,7 @@ class Cipher(object):
         verify_fingerprint: Verify the fingerprint of the encryption is the same as the one provided.
     """
 
-    def __init__(self, master, salt, secondary, public):
+    def __init__(self, master, salt, secondary, public="anonymous"):
         secondaries = "".join(
             sha256(str(key).encode()).hexdigest() for key in secondary
         )

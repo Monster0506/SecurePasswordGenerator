@@ -89,7 +89,7 @@ def test_fingerprint():
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY)
     value = verify_fingerprint(
         cipher,
-        "77688998d801db988b7799aa42cc9d16d1d1ed29fbba5b3f697bdfdfec36727e",
+        "8a351fab5b5b395eaf3011da55c453b2100f0317d22a7afac3e4bedc7c2f2b86",
     )
     print(value)
 

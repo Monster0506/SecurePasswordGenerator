@@ -26,7 +26,7 @@ class SecurePasword:
         if secondary is None:
             secondary = ["secondary"]
         self._password_object = (
-            __Dummy(password)
+            _Dummy(password)
             if password
             else Password(username=username, length=length, website=website, seed=seed)
         )
