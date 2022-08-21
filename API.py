@@ -7,6 +7,7 @@ except ImportError:
     import json
 
 from Crypto.IO import PEM
+from Crypto.Random import get_random_bytes
 from Crypto.Util.py3compat import tobytes, tostr
 
 from securePassword import Cipher, SecurePasword
@@ -33,7 +34,7 @@ def verify_fingerprint(cipher: SecurePasword, fingerprint: str):
     return cipher.verify_fingerprint(fingerprint)
 
 
-def write_master(filename: str = "master.pem", master: str = "master", passphrase=None):
+def write_master(filename: str = "master.pem", master=None, passphrase=None, write_non_existing=False):
     """Write a master key to a file using PEM format.
 
     Format:
@@ -46,13 +47,19 @@ def write_master(filename: str = "master.pem", master: str = "master", passphras
         master (str, optional): the plaintext master key. Defaults to "master".
         passphrase (str, optional): the phrase to unlock the master key. Defaults to None.
     """
-    write = _write_master(master, passphrase)
-    with open(filename, "w") as file:
-        file.write(write)
+    
+    if write_non_existing or path.exists(filename):
+        write = _write_master(master, passphrase)
+        with open(filename, "w") as file:
+            file.write(write)
+        return
+    raise FileNotFoundError(f"File: {filename} not found")
 
 
 def _write_master(master, passphrase):
-    master = sha256(master.encode()).digest()
+    if master is None:
+        master = get_random_bytes(1024)
+    master = sha256(tobytes(master)).hexdigest()
     if passphrase is not None:
         passphrase = tobytes(passphrase)
     master = tobytes(master)
@@ -143,7 +150,7 @@ def _write(filename: str, password: SecurePasword):
         json.dump(data, file, indent=4)
 
 
-def store(filename: str, password: SecurePasword, write_non_exisiting=False):
+def store(filename: str, password: SecurePasword, write_non_existing=False):
     """Store a password object in a file.
 
     Notes:
@@ -158,7 +165,7 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
         FileNotFoundError: if write_non_exisiting is False and the file does not exist.
             Format: "File: {filename} not found"
     """
-    if write_non_exisiting:
+    if write_non_existing:
         if not path.exists(filename):
             with open(filename, "w") as file:
                 json.dump([], file)

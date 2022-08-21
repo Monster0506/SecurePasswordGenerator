@@ -4,11 +4,12 @@ from API import *
 
 filename = "test.json"
 text_file = "test.txt"
-fingerprint = "6d5126b2960c815cff41c390c2410a0586aad86eaaccaeff97ec0351ce6457352f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
+fingerprint = "797617d6c2281c71fa03bf12f395003158c6d2eccfb92c605d1168975313c29e2f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
 master_file = "master.pem"
 username = "Demo User"
 website = "example.com"
 global master
+write_master(master_file, master="master", passphrase="test", write_non_existing=True)
 master = read_master(master_file, "test")
 
 
@@ -20,7 +21,7 @@ def gen_pwd_to_file():
         website="site.com",
         seed=["value", "test", "test"],
     )
-    store(filename, password, write_non_exisiting=True)
+    store(filename, password, write_non_existing=True)
     print(password.decrypt())
 
 
@@ -33,7 +34,7 @@ def gen_from_pwd_to_file():
         seed=["demo", "test", "example"],
         password="demo",
     )
-    store(filename, password, write_non_exisiting=True)
+    store(filename, password, write_non_existing=False)
 
 
 def decrypt_file_test():
@@ -48,7 +49,7 @@ def decrypt_test():
     print("decrypt_test")
     print(
         decrypt(
-            encrypted="Ed380aS9ZNWCybxt9T1AMk5TVRU6GBXoB86fJMBryEQ=",
+            encrypted="U2SqpnYnc5zDdiIHrclNRY1KsyDCJtIuAP1d4BVNqyI=",
             master=master,
             secondary=DEFAULT_SECONDARY,
             salt=DEFAULT_SALT,
@@ -119,7 +120,7 @@ def test_fingerprint_public():
         password="demo",
         public="different public key",
     )
-    store("test.json", pwd, write_non_exisiting=False)
+    store("test.json", pwd, write_non_existing=False)
     value = verify_fingerprint(pwd, fingerprint)
     print("failing" if value else "passing")
 
