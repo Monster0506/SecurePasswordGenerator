@@ -1,5 +1,4 @@
 from os import path
-from random import randint
 
 try:
     import simplejson as json  # type: ignore
