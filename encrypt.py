@@ -9,9 +9,24 @@ from Crypto import Random
 
 
 class Cipher(object):
-    def __init__(
-        self, master, salt=b"insecure salt", secondary: list = "", public="public"
-    ):
+    """A securely encrypted AES cipher.
+
+    PLEASE USE THE API INSTEAD OF THIS CLASS
+    Args:
+        master: The master key to use for encryption
+        salt: The salt to use for encryption
+        secondary: Secondary keys for additional encryption
+        public: public signing key for verifying the encryption
+
+    Implements:
+        encrypt: Encrypt a value with the master key, secondary keys, and salt
+        decrypt: Decrypt a value
+        _pad: Pad a string to 16 bytes
+        _unpad: Unpad a string to 16 bytes
+        verify_fingerprint: Verify the fingerprint of the encryption is the same as the one provided.
+    """
+
+    def __init__(self, master, salt, secondary, public):
         secondaries = "".join(
             sha256(str(key).encode()).hexdigest() for key in secondary
         )
@@ -31,33 +46,70 @@ class Cipher(object):
         ).hexdigest()
         self.fingerprint = fingerprint
         self.key = kdf[:32]
+        self.public = public
 
-    def encrypt(self, raw):
-        """Encrypt a raw plaintext"""
+    def encrypt(self, raw) -> bytes:
+        """Encrypt a value with the master key, secondary keys, and salt
+
+        Args:
+            raw (any [plaintext]): The value to encrypt
+
+        Returns:
+            bytes: The encrypted value
+        """
         raw = self._pad(raw)
         init_vector = Random.new().read(AES.block_size)
         cypher = AES.new(self.key, AES.MODE_GCM, init_vector)
         return b64encode(init_vector + cypher.encrypt(raw.encode()))
 
-    def decrypt(self, enc):
-        """Decrypt a encoding"""
+    def decrypt(self, enc) -> str:
+        """Decrypt a value with the master key, secondary keys, and salt
+
+        Args:
+            enc (binary str): The value to decrypt
+
+        Returns:
+            str: the decrypted value
+        """
         enc = b64decode(enc)
         init_vector = enc[: self.block_size]
         cipher = AES.new(self.key, AES.MODE_GCM, init_vector)
         return self._unpad(cipher.decrypt(enc[self.block_size :])).decode()
 
-    def _pad(self, string: str):
-        "Pad a string to 16 bytes"
+    def _pad(self, string: str) -> str:
+        """Pad a string to 16 bytes
+
+        Args:
+            string (str): string to be padded
+
+        Returns:
+            str: the padded string
+        """
         return string + (self.block_size - len(string) % self.block_size) * chr(
             self.block_size - len(string) % self.block_size
         )
 
     @staticmethod
     def _unpad(string):
-        """Unpad a string from 16 bytes"""
+        """Unpad a string from 16 bytes
+
+        Args:
+            string (str): string to be unpadded
+
+        Returns:
+            str: unpadded string
+        """
         return string[
             : -ord(string[len(string) - 1 :])
         ]  # sourcery skip: simplify-negative-index
 
-    def verify_fingerprint(self, fingerprint: str):
+    def verify_fingerprint(self, fingerprint: str) -> bool:
+        """Determine if the ciphers' are the same.
+
+        Args:
+            fingerprint (str): the fingerprint of the other cipher
+
+        Returns:
+            bool: True if the fingerprints are the same, False otherwise
+        """
         return self.fingerprint == fingerprint
