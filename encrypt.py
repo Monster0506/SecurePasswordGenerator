@@ -40,12 +40,18 @@ class Cipher(object):
         )
 
         # create a fingerprint phrase for verifying the encryption
-        fingerprint = sha256(
-            str(sha256(master_key + secondaries).hexdigest() + str(public)).encode()
-        ).hexdigest()
+        self.public = str(sha256(public.encode()).hexdigest())
+        fingerprint = (
+            str(
+                sha256(
+                    str(sha256(master_key + secondaries).hexdigest()).encode()
+                ).hexdigest()
+            )
+            + self.public
+        )
         self.fingerprint = fingerprint
+
         self.key = kdf[:32]
-        self.public = public
 
     def encrypt(self, raw) -> bytes:
         """Encrypt a value with the master key, secondary keys, and salt
