@@ -4,7 +4,10 @@ from API import *
 
 filename = "test.json"
 text_file = "test.txt"
+fingerprint = "6d5126b2960c815cff41c390c2410a0586aad86eaaccaeff97ec0351ce6457352f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
 master_file = "master.pem"
+username = "Demo User"
+website = "example.com"
 global master
 master = read_master(master_file, "test")
 
@@ -17,7 +20,7 @@ def gen_pwd_to_file():
         website="site.com",
         seed=["value", "test", "test"],
     )
-    store(filename, password, write_non_exisiting=False)
+    store(filename, password, write_non_exisiting=True)
     print(password.decrypt())
 
 
@@ -25,8 +28,8 @@ def gen_from_pwd_to_file():
     print("gen_from_pwd_to_file")
     password = new(
         master=master,
-        username="Demo User",
-        website="example.com",
+        username=username,
+        website=website,
         seed=["demo", "test", "example"],
         password="demo",
     )
@@ -70,7 +73,6 @@ def test_encrypt_decrypt():
 
 def test_by_website_file():
     print("test_by_website")
-    website = "example.com"
     values = decrypt_file_by_website(filename=filename, master=master, website=website)
     for value in values:
         print(value)
@@ -78,7 +80,6 @@ def test_by_website_file():
 
 def test_by_username_file():
     print("test_by_username")
-    username = "Demo User"
     values = decrypt_file_by_username(filename, username, master)
     for value in values:
         print(value)
@@ -87,25 +88,44 @@ def test_by_username_file():
 def test_fingerprint():
     print("test_fingerprint")
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY)
-    value = verify_fingerprint(
-        cipher,
-        "8a351fab5b5b395eaf3011da55c453b2100f0317d22a7afac3e4bedc7c2f2b86",
-    )
-    print(value)
+    value = verify_fingerprint(cipher, fingerprint)
+    print("passing" if value else "failing")
 
 
 def test_fingerprint_fail():
-    print("test_fingerprint_fail\nTHIS SHOULD BE FALSE")
-    cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary="failing")
-    value = verify_fingerprint(
-        cipher, "77688998d801db988b7799aa42cc9d16d1d1ed29fbba5b3f697bdfdfec36727e"
+    print("test_fingerprint_fail")
+    cipher = Cipher(
+        master=master,
+        salt=DEFAULT_SALT,
+        secondary=DEFAULT_SECONDARY,
+        public="adskfasdf",
     )
-    print(value)
+
+    value = verify_fingerprint(cipher, fingerprint)
+    print("failing" if value else "passing")
+    cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary="FAILING")
+    value = verify_fingerprint(cipher, fingerprint)
+    print("failing" if value else "passing")
+
+
+def test_fingerprint_public():
+    print("test_fingerprint_public")
+    pwd = new(
+        master=master,
+        username=username,
+        website="finger_print_public",
+        seed=["demo", "test", "example"],
+        password="demo",
+        public="different public key",
+    )
+    store("test.json", pwd, write_non_exisiting=False)
+    value = verify_fingerprint(pwd, fingerprint)
+    print("failing" if value else "passing")
 
 
 def tests():
-    test_encryption_decrytion()
     test_files()
+    test_encryption_decrytion()
     test_fingerprints()
 
 
@@ -115,9 +135,9 @@ def test_encryption_decrytion():
 
 
 def test_files():
-    decrypt_file_test()
-    gen_from_pwd_to_file()
     gen_pwd_to_file()
+    gen_from_pwd_to_file()
+    decrypt_file_test()
     test_by_username_file()
     test_by_website_file()
 
@@ -125,8 +145,8 @@ def test_files():
 def test_fingerprints():
     test_fingerprint()
     test_fingerprint_fail()
+    test_fingerprint_public()
 
 
 if __name__ == "__main__":
     tests()
-    # write_master(master_file, "abcdef", "test")
