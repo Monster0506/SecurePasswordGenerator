@@ -156,13 +156,11 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
             Format: "File: {filename} not found"
     """
     if write_non_exisiting:
-        if path.exists(filename):
-            _write(filename, password)
-            return
-        else:
+        if not path.exists(filename):
             with open(filename, "w") as file:
                 json.dump([], file)
-                return
+        _write(filename, password)
+        return
     if path.exists(filename):
         _write(filename, password)
         return
