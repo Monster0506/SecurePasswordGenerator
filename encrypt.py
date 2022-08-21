@@ -44,7 +44,7 @@ class Cipher(object):
         fingerprint = (
             str(
                 sha256(
-                    str(sha256(master_key + secondaries).hexdigest()).encode()
+                    str(sha256(salt_value + master_key + secondaries).hexdigest()).encode()
                 ).hexdigest()
             )
             + self.public

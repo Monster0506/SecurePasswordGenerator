@@ -4,7 +4,7 @@ from API import *
 
 filename = "test.json"
 text_file = "test.txt"
-fingerprint = "797617d6c2281c71fa03bf12f395003158c6d2eccfb92c605d1168975313c29e2f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
+fingerprint = "07c1e3cafbe59e0055c306dc7321c29e155d1e187dacbb588d79854ba0be5f262f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
 master_file = "master.pem"
 username = "Demo User"
 website = "example.com"
@@ -91,6 +91,8 @@ def test_fingerprint():
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY)
     value = verify_fingerprint(cipher, fingerprint)
     print("passing" if value else "failing")
+    if not value:
+        exit()
 
 
 def test_fingerprint_fail():
@@ -104,10 +106,14 @@ def test_fingerprint_fail():
 
     value = verify_fingerprint(cipher, fingerprint)
     print("failing" if value else "passing")
+    if value:
+        exit()
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary="FAILING")
     print(cipher.fingerprint)
     value = verify_fingerprint(cipher, fingerprint)
     print("failing" if value else "passing")
+    if value:
+        exit()
 
 
 def test_fingerprint_public():
@@ -123,6 +129,8 @@ def test_fingerprint_public():
     store("test.json", pwd, write_non_existing=False)
     value = verify_fingerprint(pwd, fingerprint)
     print("failing" if value else "passing")
+    if value:
+        exit()
 
 
 def main():
