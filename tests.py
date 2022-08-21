@@ -48,7 +48,7 @@ def decrypt_test():
     print("decrypt_test")
     print(
         decrypt(
-            encrypted="8S6sC1pR9YGl2Bv+rWTewHNNrC8LtH6NuSHg3MtOv44=",
+            encrypted="Ed380aS9ZNWCybxt9T1AMk5TVRU6GBXoB86fJMBryEQ=",
             master=master,
             secondary=DEFAULT_SECONDARY,
             salt=DEFAULT_SALT,
@@ -104,6 +104,7 @@ def test_fingerprint_fail():
     value = verify_fingerprint(cipher, fingerprint)
     print("failing" if value else "passing")
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary="FAILING")
+    print(cipher.fingerprint)
     value = verify_fingerprint(cipher, fingerprint)
     print("failing" if value else "passing")
 
@@ -123,7 +124,7 @@ def test_fingerprint_public():
     print("failing" if value else "passing")
 
 
-def tests():
+def main():
     test_files()
     test_encryption_decrytion()
     test_fingerprints()
@@ -149,4 +150,4 @@ def test_fingerprints():
 
 
 if __name__ == "__main__":
-    tests()
+    main()

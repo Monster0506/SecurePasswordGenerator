@@ -46,19 +46,25 @@ def write_master(filename: str = "master.pem", master: str = "master", passphras
         master (str, optional): the plaintext master key. Defaults to "master".
         passphrase (str, optional): the phrase to unlock the master key. Defaults to None.
     """
-    master = sha256(master.encode()).digest()
-    if passphrase is not None:
-        passphrase = tobytes(passphrase)
     write = _write_master(master, passphrase)
     with open(filename, "w") as file:
         file.write(write)
 
 
 def _write_master(master, passphrase):
+    master = sha256(master.encode()).digest()
     if passphrase is not None:
         passphrase = tobytes(passphrase)
     master = tobytes(master)
     return PEM.encode(master, "MASTER KEY", passphrase)
+
+
+def _read_master(data: str, passphrase: str = None):
+    if passphrase is not None:
+        passphrase = tobytes(passphrase)
+    data = PEM.decode(data, passphrase)
+    # note, data is a bytes object, and we want a string
+    return tostr(data[0])
 
 
 def read_master(filename: str, passphrase: str = None):
@@ -67,12 +73,9 @@ def read_master(filename: str, passphrase: str = None):
     Args:
         filename (str): The name of the file to read from.
     """
-    if passphrase is not None:
-        passphrase = tobytes(passphrase)
     with open(filename, "r") as file:
-        data = PEM.decode(file.read(), passphrase)
-    # note, data is a bytes object, and we want a string
-    return tostr(data[0])
+        info = file.read()
+    return _read_master(info, passphrase)
 
 
 def encrypt(value, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
