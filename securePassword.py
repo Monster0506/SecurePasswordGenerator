@@ -6,6 +6,7 @@ class _Dummy(object):
     """This is a dummy class to represent a password.
     Please do not use this class
     """
+
     def __init__(self, password):
         self.value = password
 
@@ -21,7 +22,7 @@ class SecurePasword:
         secondary=None,
         salt=b"insecure salt",
         password=None,
-        public = "public",
+        public="public",
     ):
         if secondary is None:
             secondary = ["secondary"]
@@ -31,7 +32,9 @@ class SecurePasword:
             else Password(username=username, length=length, website=website, seed=seed)
         )
 
-        self.cipher = Cipher(master=master, salt=salt, secondary=secondary, public=public)
+        self.cipher = Cipher(
+            master=master, salt=salt, secondary=secondary, public=public
+        )
         self.hash = self.cipher.encrypt(self._password_object.value)
         self.website = website
         self.username = username
@@ -58,4 +61,6 @@ class SecurePasword:
             "website": website,
             "fingerprint": fingerprint,
         }
-        
+
+    def verify_fingerprint(self, fingerprint):
+        return self.fingerprint == fingerprint
