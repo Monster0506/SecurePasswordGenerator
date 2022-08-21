@@ -78,7 +78,7 @@ def new(
     secondary=DEFAULT_SECONDARY,
     salt=DEFAULT_SALT,
     password=None,
-    public = "public",
+    public="public",
 ):
     """This is a constructor for SecurePasword
 
@@ -110,8 +110,13 @@ def new(
     return password
 
 
-def _write(filename, password):
-    """The internal function for writing to a file"""
+def _write(filename: str, password: SecurePasword):
+    """The internal function for writing to a file
+
+    Args:
+        filename (str): The name of the file to write to. Preferably json format.
+        password (SecurePasword): The password to write to the file.
+    """
     with open(filename, "r") as file:
         data = json.load(file)
     data.append(password._store())
@@ -128,11 +133,11 @@ def store(filename: str, password: SecurePasword, write_non_exisiting=False):
     Args:
         filename (str): The file to store the password in
         password (SecurePasword): The password object to store
-        write_non_exisiting (bool, optional): If to ignore a non-existant file and create it.. Defaults to False.
+        write_non_exisiting (bool, optional): If to ignore a non-existant file and create it. Defaults to False.
 
     Raises:
         FileNotFoundError: if write_non_exisiting is False and the file does not exist.
-            "File: {filename} not found"
+            Format: "File: {filename} not found"
     """
     if write_non_exisiting:
         if path.exists(filename):
@@ -160,7 +165,7 @@ def decrypt_file_by_website(
     Args:
         filename (str): The filename to decrypt
         website (str): The string to match against the website key
-        master (ANY): The master key to use for decryption
+        master (any): The master key to use for decryption
         secondary (list | string | Iterable, optional): The secondary key used for decryption. Defaults to DEFAULT_SECONDARY.
         salt (list | string | Iterable, optional): The salt value used for encryption. Defaults to DEFAULT_SALT.
 
@@ -204,7 +209,7 @@ def decrypt_file_by_username(
     Args:
         filename (str): The filename to decrypt
         username (str): The string to match against the username key
-        master (ANY): the master key to use for decryption
+        master (any): the master key to use for decryption
         secondary (list | str | Iterable, optional): The secondary key the password was encrypted with. Defaults to DEFAULT_SECONDARY.
         salt (list | str | Iterable, optional): The salt values used to encrypt the password. Defaults to DEFAULT_SALT.
 
