@@ -9,7 +9,7 @@ master_file = "master.pem"
 username = "Demo User"
 website = "example.com"
 global master
-write_master(master_file, master="master", passphrase="test", write_non_existing=True)
+# write_master(master_file, master="master", passphrase="test", write_non_existing=True)
 master = read_master(master_file, "test")
 
 
