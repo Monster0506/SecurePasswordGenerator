@@ -72,7 +72,7 @@ def new(
     secondary=DEFAULT_SECONDARY,
     salt=DEFAULT_SALT,
     password=None,
-    public="public",
+    public="anonymous",
 ):
     """This is a constructor for SecurePasword
 
