@@ -8,7 +8,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto import Random
 
 
-class AESCipher(object):
+class Cipher(object):
     def __init__(
         self, master, salt=b"insecure salt", secondary: list = "", public="public"
     ):
@@ -26,7 +26,9 @@ class AESCipher(object):
         )
 
         # create a fingerprint phrase for verifying the encryption
-        fingerprint = sha256(kdf + str(public).encode()).hexdigest()
+        fingerprint = sha256(
+            str(sha256(master_key + secondaries).hexdigest() + str(public)).encode()
+        ).hexdigest()
         self.fingerprint = fingerprint
         self.key = kdf[:32]
 
@@ -59,5 +61,3 @@ class AESCipher(object):
 
     def verify_fingerprint(self, fingerprint: str):
         return self.fingerprint == fingerprint
-
-    

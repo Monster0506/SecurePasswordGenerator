@@ -5,7 +5,7 @@ DEMO = False
 SECUREDEMO = False
 from os import path
 from pwdgen import Password
-from encrypt import AESCipher
+from encrypt import Cipher
 from securePassword import SecurePasword
 
 
@@ -49,7 +49,7 @@ def demo():
         length=32, username=user_name, website=website_name, seed="test"
     )
     master = getMaster()
-    cipher = AESCipher(master, user_name)
+    cipher = Cipher(master, user_name)
     encrypted = cipher.encrypt(password)
     decrypted = cipher.decrypt(encrypted)
     print(f"Password: {password}")
@@ -74,14 +74,14 @@ def debug(password, size):
 
 
 def decrypt(encrypted, master, secondary="", salt=b"insecure salt"):
-    cipher = AESCipher(master=master, secondary=secondary, salt=salt)
+    cipher = Cipher(master=master, secondary=secondary, salt=salt)
     return cipher.decrypt(encrypted)
 
 
 def test_secondary(pwd, password, size):
     with contextlib.suppress(UnicodeDecodeError):
         if (
-            AESCipher(master=getMaster(), secondary="FakeSecondary").decrypt(pwd.hash)
+            Cipher(master=getMaster(), secondary="FakeSecondary").decrypt(pwd.hash)
             == password.value
         ):
             print("Secondary key failed to prevent decryption")
@@ -159,13 +159,13 @@ def test_encryption(password, size, pwd, encrypted, secondary, decrypted):
         return True
     with contextlib.suppress(UnicodeDecodeError):
         if (
-            AESCipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash)
+            Cipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash)
             == password.value
         ):
             print("Master key failed to prevent decryption")
             debug(password, size)
             print(decrypted)
-            print(AESCipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash))
+            print(Cipher(master="FakeMaster", secondary=secondary).decrypt(pwd.hash))
             return True
 
 
@@ -174,7 +174,7 @@ def tests():
     username = "test"
     seed = "seed"
     secondary = "secondary"
-    cipher = AESCipher(master=getMaster(), secondary=secondary)
+    cipher = Cipher(master=getMaster(), secondary=secondary)
     for i in range(8, 1250):
         size = i
         password = Password(

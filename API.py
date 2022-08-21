@@ -6,19 +6,8 @@ try:
 except ImportError:
     import json
 from securePassword import SecurePasword
-from securePassword import AESCipher
+from securePassword import Cipher
 
-
-# testing flags. Ignore these please
-__DEBUG = False
-__GEN_TO_FILE_TEST = False
-__DECRYPT_FROM_FILE_TEST = False
-__DECRYPT_TEST = False
-__GEN_FROM_PASSWORD_TEST = False
-__ENCRYPT_DECRYPT_TEST = False
-__DECRYPT_BY_WEBSITE_TEST = False
-__DECRYPT_BY_USERNAME_TEST = False
-__VERIFY_FINGERPRINT_TEST = False
 
 # this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
@@ -43,14 +32,20 @@ def verify_fingerprint(cipher: SecurePasword, fingerprint: str):
 
 
 def set_global_master(filename: str):
-    """
-    Set the master key for a file.
+    """ Set the master key for a file.
+
+    Args:
+        filename (str): filename of the file to set the master key for.
+
+    Returns:
+        str: The master key for the file.
     """
     with open(filename, "r") as file:
         data = file.readline()
 
     global master
     master = data
+    return master
 
 
 def encrypt(value, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
@@ -65,7 +60,7 @@ def encrypt(value, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
     Returns:
         str: The encrypted value
     """
-    cipher = AESCipher(master=master, salt=salt, secondary=secondary)
+    cipher = Cipher(master=master, salt=salt, secondary=secondary)
     return cipher.encrypt(value)
 
 
@@ -235,75 +230,5 @@ def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
     Returns:
         any: The decrypted value
     """
-    cipher = AESCipher(master=master, salt=salt, secondary=secondary)
+    cipher = Cipher(master=master, salt=salt, secondary=secondary)
     return cipher.decrypt(encrypted)
-
-
-if __name__ == "__main__":
-    filename = "test.json"
-    set_global_master(".env")
-    if __DEBUG:
-        if __GEN_TO_FILE_TEST:
-            password = new(
-                master=master,
-                username=str(randint(0, 100)),
-                website="site.com",
-                seed=["value", "test", "test"],
-            )
-            store(filename, password, write_non_exisiting=False)
-            print(password.decrypt())
-        if __GEN_FROM_PASSWORD_TEST:
-            password = new(
-                master=master,
-                username="Demo User",
-                website="example.com",
-                seed=["demo", "test", "example"],
-                password="demo",
-            )
-            store(filename, password, write_non_exisiting=True)
-        if __DECRYPT_FROM_FILE_TEST:
-            with open("test.txt", "w") as file:
-                for password in decrypt_file(filename=filename, master=master):
-                    print(password)
-                    file.write(password + "\n")
-        if __DECRYPT_TEST:
-            print(
-                decrypt(
-                    encrypted="8S6sC1pR9YGl2Bv+rWTewHNNrC8LtH6NuSHg3MtOv44=",
-                    master=master,
-                    secondary=DEFAULT_SECONDARY,
-                    salt=b"insecure salt",
-                )
-            )
-        if __ENCRYPT_DECRYPT_TEST:
-            encrypted = encrypt(
-                value="test",
-                master=master,
-                secondary=DEFAULT_SECONDARY,
-                salt=DEFAULT_SALT,
-            )
-            print(encrypted)
-            decrypted = decrypt(
-                encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT
-            )
-            print(decrypted)
-        if __DECRYPT_BY_WEBSITE_TEST:
-            website = "example.com"
-            values = decrypt_file_by_website(filename, website, master)
-            for value in values:
-                print(value)
-        if __DECRYPT_BY_USERNAME_TEST:
-            username = "Demo User"
-            values = decrypt_file_by_username(filename, username, master)
-            for value in values:
-                print(value)
-        if __VERIFY_FINGERPRINT_TEST:
-            cipher = AESCipher(
-                master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY
-            )
-            print(
-                verify_fingerprint(
-                    cipher,
-                    "00ec4f0e4738649279f33c9d07ef8feec1dd97788551c35f33d2b0023e3e217e",
-                )
-            )
