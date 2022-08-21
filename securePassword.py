@@ -2,8 +2,10 @@ from encrypt import Cipher
 from pwdgen import Password
 
 
-
 class _Dummy(object):
+    """This is a dummy class to represent a password.
+    Please do not use this class
+    """
     def __init__(self, password):
         self.value = password
 
@@ -24,7 +26,7 @@ class SecurePasword:
         if secondary is None:
             secondary = ["secondary"]
         self._password_object = (
-            _Dummy(password)
+            __Dummy(password)
             if password
             else Password(username=username, length=length, website=website, seed=seed)
         )
@@ -56,3 +58,4 @@ class SecurePasword:
             "website": website,
             "fingerprint": fingerprint,
         }
+        

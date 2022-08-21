@@ -1,11 +1,10 @@
 """ Encrypt a plaintext, and decrypt it """
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from hashlib import sha256
-from os import stat
 
+from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
-from Crypto import Random
 
 
 class Cipher(object):

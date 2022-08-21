@@ -1,6 +1,7 @@
-from random import seed as _seed, choice, random
+from hashlib import pbkdf2_hmac, sha256
+from random import choice, random
+from random import seed as _seed
 from string import digits
-from hashlib import sha256, pbkdf2_hmac
 
 
 class Password:

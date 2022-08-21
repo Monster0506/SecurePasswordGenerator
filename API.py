@@ -1,12 +1,15 @@
+from hashlib import sha256
 from os import path
 
 try:
     import simplejson as json  # type: ignore
 except ImportError:
     import json
-from securePassword import SecurePasword
-from securePassword import Cipher
 
+from Crypto.IO import PEM
+from Crypto.Util.py3compat import tobytes, tostr
+
+from securePassword import Cipher, SecurePasword
 
 # this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
@@ -30,21 +33,46 @@ def verify_fingerprint(cipher: SecurePasword, fingerprint: str):
     return cipher.verify_fingerprint(fingerprint)
 
 
-def set_global_master(filename: str):
-    """ Set the master key for a file.
+def write_master(filename: str = "master.pem", master: str = "master", passphrase=None):
+    """Write a master key to a file using PEM format.
+
+    Format:
+    ----- BEGIN MASTER KEY -----
+    <master key>
+    ----- END MASTER KEY -----
 
     Args:
-        filename (str): filename of the file to set the master key for.
-
-    Returns:
-        str: The master key for the file.
+        filename (str, optional): the file to write to. Preferably a .pem . Defaults to "master.pem".
+        master (str, optional): the plaintext master key. Defaults to "master".
+        passphrase (str, optional): the phrase to unlock the master key. Defaults to None.
     """
-    with open(filename, "r") as file:
-        data = file.readline()
+    master = sha256(master.encode()).digest()
+    if passphrase is not None:
+        passphrase = tobytes(passphrase)
+    write = _write_master(master, passphrase)
+    with open(filename, "w") as file:
+        file.write(write)
 
-    global master
-    master = data
-    return master
+
+def _write_master(master, passphrase):
+    if passphrase is not None:
+        passphrase = tobytes(passphrase)
+    master = tobytes(master)
+    return PEM.encode(master, "MASTER KEY", passphrase)
+
+
+def read_master(filename: str, passphrase: str = None):
+    """Set the master key for a .pem file created with write_master.
+
+    Args:
+        filename (str): The name of the file to read from.
+    """
+    if passphrase is not None:
+        passphrase = tobytes(passphrase)
+    with open(filename, "r") as file:
+        data = PEM.decode(file.read(), passphrase)
+    # note, data is a bytes object, and we want a string
+    return tostr(data[0])
 
 
 def encrypt(value, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
@@ -105,12 +133,6 @@ def new(
 
 
 def _write(filename: str, password: SecurePasword):
-    """The internal function for writing to a file
-
-    Args:
-        filename (str): The name of the file to write to. Preferably json format.
-        password (SecurePasword): The password to write to the file.
-    """
     with open(filename, "r") as file:
         data = json.load(file)
     data.append(password._store())

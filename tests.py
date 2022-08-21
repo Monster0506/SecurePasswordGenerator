@@ -1,23 +1,12 @@
-from API import (
-    new,
-    encrypt,
-    decrypt,
-    decrypt_file_by_username,
-    decrypt_file_by_website,
-    store,
-    decrypt_file,
-    set_global_master,
-    DEFAULT_SALT,
-    DEFAULT_SECONDARY,
-    verify_fingerprint,
-    Cipher,
-)
 from random import randint
+
+from API import *
 
 filename = "test.json"
 text_file = "test.txt"
+master_file = "master.pem"
 global master
-master = set_global_master(".env")
+master = read_master(master_file, "test")
 
 
 def gen_pwd_to_file():
@@ -99,9 +88,9 @@ def test_fingerprint():
     print("test_fingerprint")
     cipher = Cipher(master=master, salt=DEFAULT_SALT, secondary=DEFAULT_SECONDARY)
     value = verify_fingerprint(
-            cipher,
-            "77688998d801db988b7799aa42cc9d16d1d1ed29fbba5b3f697bdfdfec36727e",
-        )
+        cipher,
+        "77688998d801db988b7799aa42cc9d16d1d1ed29fbba5b3f697bdfdfec36727e",
+    )
     print(value)
 
 
@@ -139,4 +128,5 @@ def test_fingerprints():
 
 
 if __name__ == "__main__":
-    tests()
+    # tests()
+    write_master(master_file, "abcdef", "test")
