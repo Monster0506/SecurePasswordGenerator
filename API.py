@@ -34,7 +34,9 @@ def verify_fingerprint(cipher: SecurePasword, fingerprint: str):
     return cipher.verify_fingerprint(fingerprint)
 
 
-def write_master(filename: str = "master.pem", master=None, passphrase=None, write_non_existing=False):
+def write_master(
+    filename: str = "master.pem", master=None, passphrase=None, write_non_existing=False
+):
     """Write a master key to a file using PEM format.
 
     Format:
@@ -47,7 +49,7 @@ def write_master(filename: str = "master.pem", master=None, passphrase=None, wri
         master (str, optional): the plaintext master key. Defaults to "master".
         passphrase (str, optional): the phrase to unlock the master key. Defaults to None.
     """
-    
+
     if write_non_existing or path.exists(filename):
         write = _write_master(master, passphrase)
         with open(filename, "w") as file:
@@ -261,3 +263,27 @@ def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
     """
     cipher = Cipher(master=master, salt=salt, secondary=secondary)
     return cipher.decrypt(encrypted)
+
+
+def check_words_fingerprint(words, fingerprint):
+    from hashlib import sha1
+
+    import requests
+
+    fingerprint = sha1(fingerprint.encode()).hexdigest()
+    item = requests.get("https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")
+    my_words = []
+    indicies = []
+
+    # divide the fingerprint into chunks of 8 bits
+    for i in range(0, len(fingerprint), 8):
+        index = fingerprint[i : i + 8]
+        index = int(index, 16)
+        indicies.append(index)
+
+    for index in indicies:
+        word = item.text.splitlines()[index % len(item.text.splitlines())]
+        word = word[word.find("\t") :]
+        word = word.removeprefix("\t")
+        my_words.append(word)
+    return " ".join(my_words) == words

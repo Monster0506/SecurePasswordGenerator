@@ -133,6 +133,18 @@ def test_fingerprint_public():
         exit()
 
 
+def test_fingerprint_words():
+    print("test_fingerprint_words")
+    value = check_words_fingerprint(
+        "unmanaged mortality snub auction electable",
+        "07c1e3cafbe59e0055c306dc7321c29e155d1e187dacbb588d79854ba0be5f26758e42ebac8e79f4cc467fd6068283c247cd73a19bf025473a632140427b0bd5",
+    )
+    print("passing" if value else "failing")
+    if not value:
+        exit()
+
+
+
 def main():
     test_files()
     test_encryption_decrytion()
@@ -156,6 +168,7 @@ def test_fingerprints():
     test_fingerprint()
     test_fingerprint_fail()
     test_fingerprint_public()
+    test_fingerprint_words()
 
 
 if __name__ == "__main__":

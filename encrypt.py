@@ -1,7 +1,8 @@
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64decode, b64encode
-from hashlib import sha256
+from hashlib import sha1, sha256
 
+import requests
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
@@ -44,12 +45,16 @@ class Cipher(object):
         fingerprint = (
             str(
                 sha256(
-                    str(sha256(salt_value + master_key + secondaries).hexdigest()).encode()
+                    str(
+                        sha256(salt_value + master_key + secondaries).hexdigest()
+                    ).encode()
                 ).hexdigest()
             )
             + self.public
         )
+
         self.fingerprint = fingerprint
+        self.words = self._generate_words(fingerprint)
 
         self.key = kdf[:32]
 
@@ -118,3 +123,30 @@ class Cipher(object):
             bool: True if the fingerprints are the same, False otherwise
         """
         return self.fingerprint == fingerprint
+
+    @staticmethod
+    def _generate_words(fingerprint: str) :
+        
+        fingerprint = sha1(fingerprint.encode()).hexdigest()
+        item = requests.get("https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")
+        words = []
+        indicies = []
+
+# divide the fingerprint into chunks of 8 bits
+        for i in range(0, len(fingerprint), 8):
+            index = (fingerprint[i:i+8])
+            index = int(index, 16)
+            indicies.append(index)
+
+
+        for index in indicies:
+            word = item.text.splitlines()[index % len(item.text.splitlines())]
+            word = word[word.find("\t") :]
+            word = word.removeprefix("\t")
+            words.append(word)
+        return " ".join(words)
+
+
+
+
+

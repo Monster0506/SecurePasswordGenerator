@@ -55,11 +55,13 @@ class SecurePasword:
         username = self.username
         website = self.website
         fingerprint = self.fingerprint
+        fpwords = self.cipher.words
         return {
             "hash": hashed,
             "username": username,
             "website": website,
             "fingerprint": fingerprint,
+            "words": fpwords,
         }
 
     def verify_fingerprint(self, fingerprint):
