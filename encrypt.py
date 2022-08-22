@@ -12,6 +12,7 @@ class Cipher(object):
     """A securely encrypted AES cipher.
 
     PLEASE USE THE API INSTEAD OF THIS CLASS
+
     Args:
         master: The master key to use for encryption
         salt: The salt to use for encryption
@@ -25,6 +26,7 @@ class Cipher(object):
         _unpad: Unpad a string to 16 bytes
         verify_fingerprint: Verify the fingerprint of the encryption is the same as the one provided.
         _generate_words: Generate a list of words from a fingerprint
+
     values:
         block_size: The block size of the cipher
         public: The public signing key for verifying the encryption
