@@ -24,6 +24,13 @@ class Cipher(object):
         _pad: Pad a string to 16 bytes
         _unpad: Unpad a string to 16 bytes
         verify_fingerprint: Verify the fingerprint of the encryption is the same as the one provided.
+        _generate_words: Generate a list of words from a fingerprint
+    values:
+        block_size: The block size of the cipher
+        public: The public signing key for verifying the encryption
+        key: The key for the cipher
+        fingerprint: The fingerprint of the cipher. Can be used to verify the encryption.
+        words: The list of words from the fingerprint. For simple sharing
     """
 
     def __init__(self, master, salt, secondary, public="anonymous"):
@@ -125,19 +132,19 @@ class Cipher(object):
         return self.fingerprint == fingerprint
 
     @staticmethod
-    def _generate_words(fingerprint: str) :
-        
+    def _generate_words(fingerprint: str):
         fingerprint = sha1(fingerprint.encode()).hexdigest()
-        item = requests.get("https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")
+        item = requests.get(
+            "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt"
+        )
         words = []
         indicies = []
 
-# divide the fingerprint into chunks of 8 bits
+        # divide the fingerprint into chunks of 8 bits
         for i in range(0, len(fingerprint), 8):
-            index = (fingerprint[i:i+8])
+            index = fingerprint[i : i + 8]
             index = int(index, 16)
             indicies.append(index)
-
 
         for index in indicies:
             word = item.text.splitlines()[index % len(item.text.splitlines())]
@@ -145,8 +152,3 @@ class Cipher(object):
             word = word.removeprefix("\t")
             words.append(word)
         return " ".join(words)
-
-
-
-
-
