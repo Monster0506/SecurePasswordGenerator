@@ -148,7 +148,7 @@ def new(
     return password
 
 
-def _write(filename: str, password: SecurePasword):
+def _store(filename: str, password: SecurePasword):
     with open(filename, "r") as file:
         data = json.load(file)
     data.append(password._store())
@@ -175,10 +175,10 @@ def store(filename: str, password: SecurePasword, write_non_existing=False):
         if not path.exists(filename):
             with open(filename, "w") as file:
                 json.dump([], file)
-        _write(filename, password)
+        _store(filename, password)
         return
     if path.exists(filename):
-        _write(filename, password)
+        _store(filename, password)
         return
     raise FileNotFoundError(f"File: {filename} not found")
 
