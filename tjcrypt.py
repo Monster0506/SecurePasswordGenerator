@@ -1,6 +1,10 @@
 from hashlib import sha256
 from os import path
 
+# this is just for the api
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
+
 try:
     import simplejson as json  # type: ignore
 except ImportError:

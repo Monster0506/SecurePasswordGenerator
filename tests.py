@@ -1,6 +1,6 @@
 from random import randint
 
-from API import *
+from tjcrypt import *
 
 filename = "test.json"
 text_file = "test.txt"
