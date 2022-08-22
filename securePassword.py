@@ -1,5 +1,5 @@
 from encrypt import Cipher
-from pwdgen import Password
+from password import Password
 
 
 class _Dummy(object):
