@@ -279,24 +279,28 @@ def verify_words_fingerprint(words, fingerprint):
     Returns:
         bool: True if the fingerprint matches the words, False otherwise
     """
-    from hashlib import sha1
 
-    import requests
+    return _get_words_from_fingerprint(fingerprint=fingerprint) == words
 
-    fingerprint = sha1(fingerprint.encode()).hexdigest()
-    item = requests.get("https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")
-    my_words = []
-    indicies = []
 
-    # divide the fingerprint into chunks of 8 bits
-    for i in range(0, len(fingerprint), 8):
-        index = fingerprint[i : i + 8]
-        index = int(index, 16)
-        indicies.append(index)
+def words_from_fingerprint(fingerprint: str):
+    """Return the words from a fingerprint.
 
-    for index in indicies:
-        word = item.text.splitlines()[index % len(item.text.splitlines())]
-        word = word[word.find("\t") :]
-        word = word.removeprefix("\t")
-        my_words.append(word)
-    return " ".join(my_words) == words
+    Args:
+        fingerprint (str): The fingerprint to get the words from.
+
+    Returns:
+        str: The words from the fingerprint.
+    """
+    return _get_words_from_fingerprint(fingerprint)
+
+
+def _get_words_from_fingerprint(fingerprint):
+    "Was getting tired of typing this out every time"
+    cipher = Cipher(
+        master=fingerprint,
+        salt=DEFAULT_SALT,
+        secondary=DEFAULT_SECONDARY,
+        public="wow. Why did I not modularize this earlier? I'm so lazy",
+    )
+    return cipher._generate_words(fingerprint)
