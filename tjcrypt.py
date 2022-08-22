@@ -269,7 +269,16 @@ def decrypt(encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT):
     return cipher.decrypt(encrypted)
 
 
-def check_words_fingerprint(words, fingerprint):
+def verify_words_fingerprint(words, fingerprint):
+    """Check if a fingerprint matches a list of words.
+
+    Args:
+        words (str): The list of words to check against the fingerprint
+        fingerprint (str): the fingerprint to check against the words
+
+    Returns:
+        bool: True if the fingerprint matches the words, False otherwise
+    """
     from hashlib import sha1
 
     import requests
