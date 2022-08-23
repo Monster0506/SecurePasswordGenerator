@@ -136,13 +136,25 @@ def test_fingerprint_public():
 def test_fingerprint_words():
     print("test_fingerprint_words")
     value = verify_words_fingerprint(
-        "unmanaged mortality snub auction electable",
+        "uncertain impound drastic clothes sycamore swimming guru unnoticed",
         "07c1e3cafbe59e0055c306dc7321c29e155d1e187dacbb588d79854ba0be5f26758e42ebac8e79f4cc467fd6068283c247cd73a19bf025473a632140427b0bd5",
     )
     print("passing" if value else "failing")
     if not value:
         exit()
 
+
+def test_fingerprint_public_words():
+    print("test_fingerprint_public_words")
+    cipher1 = Cipher(master=master)
+    cipher2 = Cipher(master=master, public="anonymou")
+    for word in cipher1.words.split(" "):
+        if word in cipher2.words.split(" "):
+            print("failing")
+            print(cipher1.words)
+            print(cipher2.words)
+            exit()
+    print("passing")
 
 
 def main():
@@ -169,6 +181,7 @@ def test_fingerprints():
     test_fingerprint_fail()
     test_fingerprint_public()
     test_fingerprint_words()
+    test_fingerprint_public_words()
 
 
 if __name__ == "__main__":
