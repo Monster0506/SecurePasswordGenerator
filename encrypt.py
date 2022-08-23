@@ -1,6 +1,6 @@
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64decode, b64encode
-from hashlib import sha1, sha256
+from hashlib import sha256
 
 import requests
 from Crypto import Random
@@ -122,7 +122,7 @@ class Cipher(object):
 
     @staticmethod
     def _generate_words(fingerprint: str):
-        fingerprint = sha1(fingerprint.encode()).hexdigest()
+        fingerprint = sha256(fingerprint.encode()).hexdigest()
         item = requests.get(
             "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt"
         )
