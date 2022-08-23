@@ -1,3 +1,4 @@
+# TODO: Add chacha cipher.
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64decode, b64encode
 from hashlib import sha256
@@ -35,20 +36,35 @@ class Cipher(object):
         words: The list of words from the fingerprint. For simple sharing
     """
 
-    def __init__(self, master, salt=b'insecure salt', secondary=None, public="anonymous"):
+    def __init__(
+        self, master, salt=b"insecure salt", secondary=None, public="anonymous"
+    ):
         if secondary is None:
             secondary = ["secondary"]
-        secondaries = "".join(sha256(str(key).encode()).hexdigest() for key in secondary)
+        secondaries = "".join(
+            sha256(str(key).encode()).hexdigest() for key in secondary
+        )
 
         secondaries = sha256(secondaries.encode()).hexdigest().encode()
         salt = str(salt).encode()
         master_key = PBKDF2(master, str(salt).encode(), 32)
         salt_value = PBKDF2(str(salt).encode(), master_key, 32)
         self.block_size = AES.block_size
-        kdf = PBKDF2(str(sha256(master_key + secondaries).hexdigest()), salt_value, 32, 1000)
+        kdf = PBKDF2(
+            str(sha256(master_key + secondaries).hexdigest()), salt_value, 32, 1000
+        )
 
         self.public = str(sha256(public.encode()).hexdigest())
-        fingerprint = str(sha256(str(sha256(salt_value + master_key + secondaries).hexdigest()).encode()).hexdigest()) + self.public
+        fingerprint = (
+            str(
+                sha256(
+                    str(
+                        sha256(salt_value + master_key + secondaries).hexdigest()
+                    ).encode()
+                ).hexdigest()
+            )
+            + self.public
+        )
 
         self.fingerprint = fingerprint
         self.words = self._generate_words(fingerprint)
@@ -141,3 +157,7 @@ class Cipher(object):
             word = word.removeprefix("\t")
             words.append(word)
         return " ".join(words)
+
+
+# TODO: chacha ==> Use key, nonce, and block number to produce an encrpyted ("random") string (Currently implemented.) -> bytes -(xor message)> output
+# TODO: decrypt ==> produce string -(xor ciphertext)> message
