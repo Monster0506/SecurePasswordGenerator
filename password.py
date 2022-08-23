@@ -4,9 +4,8 @@ from random import seed as _seed
 from string import digits
 
 
-class Password:
+class GenPassword:
     def __init__(self, seed: list, username: str, website: str, length: int = 32):
-
         seeds = "".join(sha256(str(key).encode()).hexdigest() for key in seed)
 
         # make sure length is greater than 8

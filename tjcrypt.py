@@ -14,6 +14,8 @@ from Crypto.IO import PEM
 from Crypto.Random import get_random_bytes
 from Crypto.Util.py3compat import tobytes, tostr
 
+# also for api
+from password import GenPassword
 from securePassword import Cipher, SecurePasword
 
 # this is the default salt value used for encryption. This can be changed to any value.

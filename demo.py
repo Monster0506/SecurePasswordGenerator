@@ -34,7 +34,8 @@ salt = [
     "The default salt is bin('insecure salt')",
     "That is not very secure",
 ]
-
+# notice, by the way, that passwords contain values that can be pronounced, allowing for easier memorization
+# for details of this implementation, see the password.py file
 
 password0 = tjcrypt.new(
     master=master_key,
@@ -138,4 +139,23 @@ encrypted_cipher = tjcrypt.Cipher(master_key, salt=salt, secondary="secondary")
 print(encrypted_cipher.fingerprint)
 print(encrypted_cipher.encrypt("secret message"))
 print(encrypted_cipher.words)
-print(tjcrypt.verify_words_fingerprint(encrypted_cipher.words, encrypted_cipher.fingerprint))
+print(
+    tjcrypt.verify_words_fingerprint(
+        encrypted_cipher.words, encrypted_cipher.fingerprint
+    )
+)
+# you can generate a password from initialization values by using the GenPassword class
+print(
+    tjcrypt.GenPassword(
+        seed=seed, username="username", website="example.com", length=32
+    )
+)
+print(
+    tjcrypt.GenPassword(
+        seed=["here is a seperate seed", "and here is another"], username="username", website="example.com", length=32
+    )
+)
+# the reason for having these 'seed' values is as follows:
+# if a password is generated without a seed, the username and website can easily be obtained by an attacker
+# allowing them to generate the same password
+# this seed value is mixed with the username and website to create a different password, with the same username and seed.

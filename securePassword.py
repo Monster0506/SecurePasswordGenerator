@@ -1,5 +1,5 @@
 from encrypt import Cipher
-from password import Password
+from password import GenPassword
 
 
 class _Dummy(object):
@@ -29,7 +29,7 @@ class SecurePasword:
         self._password_object = (
             _Dummy(password)
             if password
-            else Password(username=username, length=length, website=website, seed=seed)
+            else GenPassword(username=username, length=length, website=website, seed=seed)
         )
 
         self.cipher = Cipher(
