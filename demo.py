@@ -23,6 +23,7 @@ with open(master_file, "r") as f:
 
 # read the master key from the file
 master_key = tjcrypt.read_master(master_file, passphrase="password")
+website = "example.com"
 seed = [
     "this is one seed",
     "this is another seed",
@@ -40,7 +41,7 @@ salt = [
 password0 = tjcrypt.new(
     master=master_key,
     username="username",
-    website="example.com",
+    website=website,
     seed=seed,
     salt=salt,
     public="The default public key is 'anonymous'",
@@ -114,7 +115,7 @@ print("\n")
 for password in decrypted_username:
     print(password)
 decrypted_website = tjcrypt.decrypt_file_by_website(
-    password_file, website="example.com", master=master_key, salt=salt
+    password_file, website=website, master=master_key, salt=salt
 )
 print("\n")
 for password in decrypted_website:
@@ -147,12 +148,12 @@ print(
 # you can generate a password from initialization values by using the GenPassword class
 print(
     tjcrypt.GenPassword(
-        seed=seed, username="username", website="example.com", length=32
+        seed=seed, username="username", website=website, length=32
     )
 )
 print(
     tjcrypt.GenPassword(
-        seed=["here is a seperate seed", "and here is another"], username="username", website="example.com", length=32
+        seed=["here is a seperate seed", "and here is another"], username="username", website=website, length=32
     )
 )
 # the reason for having these 'seed' values is as follows:
