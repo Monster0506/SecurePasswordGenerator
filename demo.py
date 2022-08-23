@@ -159,3 +159,4 @@ print(
 # if a password is generated without a seed, the username and website can easily be obtained by an attacker
 # allowing them to generate the same password
 # this seed value is mixed with the username and website to create a different password, with the same username and seed.
+# this follows the same logic for the secondary keys, where a master could be potentially brute-forced.
