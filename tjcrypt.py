@@ -1,16 +1,15 @@
 from hashlib import sha256
 from os import path
-
-# this is just for the api
-from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
+from typing import Literal
 
 try:
     import simplejson as json  # type: ignore
 except ImportError:
     import json
 
+# for api
 from Crypto.IO import PEM
+# for api
 from Crypto.Random import get_random_bytes
 from Crypto.Util.py3compat import tobytes, tostr
 
@@ -78,7 +77,6 @@ def _read_master(data: str, passphrase: str = None):
     if passphrase is not None:
         passphrase = tobytes(passphrase)
     data = PEM.decode(data, passphrase)
-    # note, data is a bytes object, and we want a string
     return tostr(data[0])
 
 
@@ -158,7 +156,7 @@ def _store(filename: str, password: SecurePasword):
         json.dump(data, file, indent=4)
 
 
-def store(filename: str, password: SecurePasword, write_non_existing=False):
+def store(filename: str, password: SecurePasword, write_non_existing=False) -> Literal[True]:
     """Store a password object in a file.
 
     Notes:
@@ -178,10 +176,10 @@ def store(filename: str, password: SecurePasword, write_non_existing=False):
             with open(filename, "w") as file:
                 json.dump([], file)
         _store(filename, password)
-        return
+        return True
     if path.exists(filename):
         _store(filename, password)
-        return
+        return True
     raise FileNotFoundError(f"File: {filename} not found")
 
 
