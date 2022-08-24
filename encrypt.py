@@ -1,4 +1,6 @@
 # TODO: Add chacha cipher.
+# TODO: chacha ==> Use key, nonce, and block number to produce an encrpyted ("random") string (Currently implemented.) -> bytes -(xor message)> output
+# TODO: decrypt ==> produce string as above -(xor ciphertext)> message
 """ Encrypt a plaintext, and decrypt it """
 from base64 import b64decode, b64encode
 from hashlib import sha256
@@ -7,6 +9,7 @@ import requests
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Util.py3compat import tobytes, tostr
 
 
 class Cipher(object):
@@ -30,25 +33,25 @@ class Cipher(object):
 
     values:
         block_size: The block size of the cipher
-        public: The public signing key for verifying the encryption
-        key: The key for the cipher
+        public: The public signing key for verifying the encryption.
+        key: The key for the cipher.
         fingerprint: The fingerprint of the cipher. Can be used to verify the encryption.
-        words: The list of words from the fingerprint. For simple sharing
+        words: The list of words from the fingerprint, for simple sharing.
     """
 
     def __init__(
         self, master, salt=b"insecure salt", secondary=None, public="anonymous"
     ):
+        master = tobytes(master)
         if secondary is None:
             secondary = ["secondary"]
         secondaries = "".join(
-            sha256(str(key).encode()).hexdigest() for key in secondary
+            sha256(tobytes(key)).hexdigest() for key in secondary
         )
-
-        secondaries = sha256(secondaries.encode()).hexdigest().encode()
-        salt = str(salt).encode()
-        master_key = PBKDF2(master, str(salt).encode(), 32)
-        salt_value = PBKDF2(str(salt).encode(), master_key, 32)
+        secondaries = sha256(tobytes(secondaries)).hexdigest().encode()
+        salt = tobytes(salt)
+        master_key = PBKDF2(master, salt, 32)
+        salt_value = PBKDF2(salt, master_key, 32)
         self.block_size = AES.block_size
         kdf = PBKDF2(
             str(sha256(master_key + secondaries).hexdigest()), salt_value, 32, 1000
@@ -58,9 +61,9 @@ class Cipher(object):
         fingerprint = (
             str(
                 sha256(
-                    str(
+                    tobytes(
                         sha256(salt_value + master_key + secondaries).hexdigest()
-                    ).encode()
+                    )
                 ).hexdigest()
             )
             + self.public
@@ -80,9 +83,10 @@ class Cipher(object):
             bytes: The encrypted value
         """
         raw = self._pad(raw)
+        raw = tobytes(raw)
         init_vector = Random.new().read(AES.block_size)
         cypher = AES.new(self.key, AES.MODE_GCM, init_vector)
-        return b64encode(init_vector + cypher.encrypt(raw.encode()))
+        return b64encode(init_vector + cypher.encrypt(raw))
 
     def decrypt(self, enc) -> str:
         """Decrypt a value with the master key, secondary keys, and salt
@@ -94,9 +98,10 @@ class Cipher(object):
             str: the decrypted value
         """
         enc = b64decode(enc)
+        # enc = tostr(enc)
         init_vector = enc[: self.block_size]
         cipher = AES.new(self.key, AES.MODE_GCM, init_vector)
-        return self._unpad(cipher.decrypt(enc[self.block_size :])).decode()
+        return self._unpad(cipher.decrypt(enc[self.block_size :]))
 
     def _pad(self, string: str) -> str:
         """Pad a string to 16 bytes
@@ -121,9 +126,9 @@ class Cipher(object):
         Returns:
             str: unpadded string
         """
-        return string[
+        return tostr(string[
             : -ord(string[len(string) - 1 :])
-        ]  # sourcery skip: simplify-negative-index
+        ])  # sourcery skip: simplify-negative-index
 
     def verify_fingerprint(self, fingerprint: str) -> bool:
         """Determine if the ciphers' are the same.
@@ -138,7 +143,7 @@ class Cipher(object):
 
     @staticmethod
     def _generate_words(fingerprint: str):
-        fingerprint = sha256(fingerprint.encode()).hexdigest()
+        fingerprint = sha256(tobytes(fingerprint)).hexdigest()
         item = requests.get(
             "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt"
         )
@@ -157,7 +162,3 @@ class Cipher(object):
             word = word.removeprefix("\t")
             words.append(word)
         return " ".join(words)
-
-
-# TODO: chacha ==> Use key, nonce, and block number to produce an encrpyted ("random") string (Currently implemented.) -> bytes -(xor message)> output
-# TODO: decrypt ==> produce string -(xor ciphertext)> message

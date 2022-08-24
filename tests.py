@@ -4,7 +4,8 @@ from tjcrypt import *
 
 filename = "test.json"
 text_file = "test.txt"
-fingerprint = "07c1e3cafbe59e0055c306dc7321c29e155d1e187dacbb588d79854ba0be5f262f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
+fingerprint = "c475540a8196343f654eefed25bde66b9df9e09a7aa80a84b8ba19157358e9722f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
+hashed = "zFfo5nghOXlHEbUTxEO3hRo5QAFboBluBzkiGZiXliE="
 master_file = "master.pem"
 username = "Demo User"
 website = "example.com"
@@ -63,7 +64,7 @@ def decrypt_file_test():
 def decrypt_test():
     print("decrypt_test")
     decrypted = decrypt(
-        encrypted="U2SqpnYnc5zDdiIHrclNRY1KsyDCJtIuAP1d4BVNqyI=",
+        encrypted=hashed,
         master=master,
         secondary=DEFAULT_SECONDARY,
         salt=DEFAULT_SALT,
