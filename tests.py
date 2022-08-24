@@ -22,7 +22,12 @@ def gen_pwd_to_file():
         seed=["value", "test", "test"],
     )
     store(filename, password, write_non_existing=True)
-    print(password.decrypt())
+    if dec := password.decrypt():
+        print(dec)
+        print("passing")
+    else:
+        print("failing")
+        exit()
 
 
 def gen_from_pwd_to_file():
@@ -34,27 +39,40 @@ def gen_from_pwd_to_file():
         seed=["demo", "test", "example"],
         password="demo",
     )
-    store(filename, password, write_non_existing=False)
+    if store(filename, password, write_non_existing=False):
+        print("passing")
+    else:
+        print("failing")
+        exit()
 
 
 def decrypt_file_test():
     print("decrypt_file_test")
     with open("test.txt", "w") as file:
         for password in decrypt_file(filename=filename, master=master):
-            print(password)
-            file.write(password + "\n")
+            if password:
+                print(password)
+                file.write(password + "\n")
+                print("passing")
+            else:
+                print("failing")
+                exit()
+            
 
 
 def decrypt_test():
     print("decrypt_test")
-    print(
-        decrypt(
-            encrypted="U2SqpnYnc5zDdiIHrclNRY1KsyDCJtIuAP1d4BVNqyI=",
-            master=master,
-            secondary=DEFAULT_SECONDARY,
-            salt=DEFAULT_SALT,
-        )
+    decrypted = decrypt(
+        encrypted="U2SqpnYnc5zDdiIHrclNRY1KsyDCJtIuAP1d4BVNqyI=",
+        master=master,
+        secondary=DEFAULT_SECONDARY,
+        salt=DEFAULT_SALT,
     )
+    if decrypted == "demo":
+        print("passing")
+    else:
+        print("failing")
+        exit()
 
 
 def test_encrypt_decrypt():
@@ -65,25 +83,43 @@ def test_encrypt_decrypt():
         secondary=DEFAULT_SECONDARY,
         salt=DEFAULT_SALT,
     )
-    print(encrypted)
+    if encrypted:
+        print(encrypted)
+        print("passing")
+    else:
+        print("failing")
+        exit()
     decrypted = decrypt(
         encrypted, master, secondary=DEFAULT_SECONDARY, salt=DEFAULT_SALT
     )
-    print(decrypted)
+    if decrypted == "test":
+        print("passing")
+    else:
+        print("failing")
 
 
 def test_by_website_file():
     print("test_by_website")
     values = decrypt_file_by_website(filename=filename, master=master, website=website)
     for value in values:
-        print(value)
+        if value:
+            print(value)
+            print("passing")
+        else:
+            print("failing")
+            exit()
 
 
 def test_by_username_file():
     print("test_by_username")
     values = decrypt_file_by_username(filename, username, master)
     for value in values:
-        print(value)
+        if value:
+            print(value)
+            print("passing")
+        else:
+            print("failing")
+            exit()
 
 
 def test_fingerprint():
