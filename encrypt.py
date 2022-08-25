@@ -39,12 +39,19 @@ class Cipher(object):
         words: The list of words from the fingerprint, for simple sharing.
     """
 
-    def __init__(
-        self, master, salt=b"insecure salt", secondary=None, public="anonymous"
-    ):
+    def __init__(self, master, salt=None, secondary=None, public="anonymous"):
         master = tobytes(master)
         if secondary is None:
             secondary = ["secondary"]
+        if salt is None:
+            salt = Random.new().read(AES.block_size)
+        else:
+            salts = ""
+            for item in salts:
+                item = tobytes(item)
+                item = sha256(item).digest()
+                salts += item
+            salt = tobytes(salts)
         secondaries = "".join(sha256(tobytes(key)).hexdigest() for key in secondary)
         secondaries = sha256(tobytes(secondaries)).hexdigest().encode()
         salt = tobytes(salt)
@@ -68,6 +75,7 @@ class Cipher(object):
         self.fingerprint = fingerprint
         self.words = self._generate_words(fingerprint)
         self.key = kdf[:32]
+        self.signature = sha256(self.key).digest()
 
     def encrypt(self, raw) -> bytes:
         """Encrypt a value with the master key, secondary keys, and salt

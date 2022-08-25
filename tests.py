@@ -4,8 +4,8 @@ from tjcrypt import *
 
 filename = "test.json"
 text_file = "test.txt"
-fingerprint = "c475540a8196343f654eefed25bde66b9df9e09a7aa80a84b8ba19157358e9722f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
-hashed = "zFfo5nghOXlHEbUTxEO3hRo5QAFboBluBzkiGZiXliE="
+fingerprint = "6d095023ddba833c5a0c6cc677aaefbbe44fc4f945ffdd554f1171ff7b6a9ede2f183a4e64493af3f377f745eda502363cd3e7ef6e4d266d444758de0a85fcc8"
+hashed = "MKDA944FnPFsJAmMaweZj3Ap7GbTNjadHhjF62wcN3U="
 master_file = "master.pem"
 username = "Demo User"
 website = "example.com"
@@ -58,7 +58,6 @@ def decrypt_file_test():
             else:
                 print("failing")
                 exit()
-            
 
 
 def decrypt_test():
@@ -181,19 +180,6 @@ def test_fingerprint_words():
         exit()
 
 
-def test_fingerprint_public_words():
-    print("test_fingerprint_public_words")
-    cipher1 = Cipher(master=master)
-    cipher2 = Cipher(master=master, public="anonymou")
-    for word in cipher1.words.split(" "):
-        if word in cipher2.words.split(" "):
-            print("failing")
-            print(cipher1.words)
-            print(cipher2.words)
-            exit()
-    print("passing")
-
-
 def main():
     test_files()
     test_encryption_decrytion()
@@ -218,7 +204,6 @@ def test_fingerprints():
     test_fingerprint_fail()
     test_fingerprint_public()
     test_fingerprint_words()
-    test_fingerprint_public_words()
 
 
 if __name__ == "__main__":

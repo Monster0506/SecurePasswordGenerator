@@ -1,3 +1,5 @@
+from base64 import b64decode, b64encode
+
 from encrypt import Cipher
 from password import GenPassword
 
@@ -29,7 +31,9 @@ class SecurePasword:
         self._password_object = (
             _Dummy(password)
             if password
-            else GenPassword(username=username, length=length, website=website, seed=seed)
+            else GenPassword(
+                username=username, length=length, website=website, seed=seed
+            )
         )
 
         self.cipher = Cipher(
@@ -56,12 +60,14 @@ class SecurePasword:
         website = self.website
         fingerprint = self.fingerprint
         fpwords = self.cipher.words
+        signature = b64encode(self.cipher.signature).decode("utf-8")
         return {
             "hash": hashed,
             "username": username,
             "website": website,
             "fingerprint": fingerprint,
             "words": fpwords,
+            "signature": signature,
         }
 
     def verify_fingerprint(self, fingerprint):
