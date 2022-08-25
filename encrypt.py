@@ -45,9 +45,7 @@ class Cipher(object):
         master = tobytes(master)
         if secondary is None:
             secondary = ["secondary"]
-        secondaries = "".join(
-            sha256(tobytes(key)).hexdigest() for key in secondary
-        )
+        secondaries = "".join(sha256(tobytes(key)).hexdigest() for key in secondary)
         secondaries = sha256(tobytes(secondaries)).hexdigest().encode()
         salt = tobytes(salt)
         master_key = PBKDF2(master, salt, 32)
@@ -61,9 +59,7 @@ class Cipher(object):
         fingerprint = (
             str(
                 sha256(
-                    tobytes(
-                        sha256(salt_value + master_key + secondaries).hexdigest()
-                    )
+                    tobytes(sha256(salt_value + master_key + secondaries).hexdigest())
                 ).hexdigest()
             )
             + self.public
@@ -126,9 +122,9 @@ class Cipher(object):
         Returns:
             str: unpadded string
         """
-        return tostr(string[
-            : -ord(string[len(string) - 1 :])
-        ])  # sourcery skip: simplify-negative-index
+        return tostr(
+            string[: -ord(string[len(string) - 1 :])]
+        )  # sourcery skip: simplify-negative-index
 
     def verify_fingerprint(self, fingerprint: str) -> bool:
         """Determine if the ciphers' are the same.
