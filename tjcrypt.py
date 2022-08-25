@@ -9,6 +9,7 @@ except ImportError:
 
 # for api
 from Crypto.IO import PEM
+
 # for api
 from Crypto.Random import get_random_bytes
 from Crypto.Util.py3compat import tobytes, tostr
@@ -16,6 +17,7 @@ from Crypto.Util.py3compat import tobytes, tostr
 # also for api
 from password import GenPassword
 from securePassword import Cipher, SecurePasword
+
 
 # this is the default salt value used for encryption. This can be changed to any value.
 # Please, please, please, do not use this, as it is insecure and can be easily cracked.
@@ -156,7 +158,9 @@ def _store(filename: str, password: SecurePasword):
         json.dump(data, file, indent=4)
 
 
-def store(filename: str, password: SecurePasword, write_non_existing=False) -> Literal[True]:
+def store(
+    filename: str, password: SecurePasword, write_non_existing=False
+) -> Literal[True]:
     """Store a password object in a file.
 
     Notes:
@@ -179,7 +183,7 @@ def store(filename: str, password: SecurePasword, write_non_existing=False) -> L
         return True
     if path.exists(filename):
         _store(filename, password)
-        return True
+        return 1
     raise FileNotFoundError(f"File: {filename} not found")
 
 

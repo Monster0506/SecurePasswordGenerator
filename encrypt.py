@@ -102,7 +102,6 @@ class Cipher(object):
             str: the decrypted value
         """
         enc = b64decode(enc)
-        # enc = tostr(enc)
         init_vector = enc[: self.block_size]
         cipher = AES.new(self.key, AES.MODE_GCM, init_vector)
         return self._unpad(cipher.decrypt(enc[self.block_size :]))
